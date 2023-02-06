@@ -7,30 +7,19 @@
 
 --[====[ IN-GAME CODE ]====]
 
-require("Math")
+require("PID")
 
-YawSpeedTurnsPerSec = {
-    now = 0,
-    delta = 0,
-    update = function(self, nowval)
-        self.delta = nowval - self.now
-        self.now = nowval
-    end
-}
-rudderOutput = 0
 targetYawSpeedTurnsPerSec = property.getNumber("Yaw Speed [turns/s]")
 iGainAt40RPS = property.getNumber("Yaw I Gain at 40 RPS")
 lookaheadTicks = property.getNumber("Yaw Lookahead [ticks]")
+rudderPID = SpeedPid.new(0, lookaheadTicks, -1, 1)
 
 function onTick()
     mode = 1
-    YawSpeedTurnsPerSec:update(input.getNumber(9))
+    yawSpeedTurnsPerSec = input.getNumber(9)
     seatYawInput = input.getNumber(31)
+    local targetYawSpeedTurnsPerSec = targetYawSpeedTurnsPerSec * seatYawInput
     propRPS = math.max(input.getNumber(32), 6.666)
-    iGain = iGainAt40RPS * 40 / propRPS
-    rudderOutput = clamp(rudderOutput +
-        (
-        targetYawSpeedTurnsPerSec * seatYawInput -
-            (YawSpeedTurnsPerSec.now + YawSpeedTurnsPerSec.delta * lookaheadTicks)) * iGain, -1, 1)
-    output.setNumber(4, rudderOutput)
+    rudderPID.iGain = iGainAt40RPS * 40 / propRPS
+    output.setNumber(4, rudderPID:process(targetYawSpeedTurnsPerSec, yawSpeedTurnsPerSec))
 end

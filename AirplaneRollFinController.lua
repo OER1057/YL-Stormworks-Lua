@@ -7,31 +7,20 @@
 
 --[====[ IN-GAME CODE ]====]
 
-require("Math")
+require("PID")
 
-RollSpeedTurnsPerSec = {
-    now = 0,
-    delta = 0,
-    update = function(self, nowval)
-        self.delta = nowval - self.now
-        self.now = nowval
-    end
-}
-aileronOutput = 0
 targetRollSpeedTurnsPerSec = property.getNumber("Roll Speed [turns/s]")
 iGainAt400Kmph = property.getNumber("Roll I Gain at 400 km/h")
 lookaheadTicks = property.getNumber("Roll Lookahead [ticks]")
+aileronPID = SpeedPid.new(0, lookaheadTicks, -1, 1)
 
 function onTick()
     mode = 1
-    RollSpeedTurnsPerSec:update(input.getNumber(7))
+    rollSpeedTurnsPerSec = input.getNumber(7)
     seatRollInput = input.getNumber(31)
+    local targetRollSpeedTurnsPerSec = targetRollSpeedTurnsPerSec * seatRollInput
     airSpeed = math.max(input.getNumber(1), 100)
-    iGain = iGainAt400Kmph * 400 / airSpeed
-    aileronOutput = clamp(aileronOutput +
-        (
-        targetRollSpeedTurnsPerSec * seatRollInput -
-            (RollSpeedTurnsPerSec.now + RollSpeedTurnsPerSec.delta * lookaheadTicks)) * iGain, -1, 1)
-    output.setNumber(1, aileronOutput)
-    output.setNumber(11, -aileronOutput)
+    aileronPID.iGain = iGainAt400Kmph * 400 / airSpeed
+    output.setNumber(1, aileronPID:process(targetRollSpeedTurnsPerSec, rollSpeedTurnsPerSec))
+    output.setNumber(11, -aileronPID.output)
 end

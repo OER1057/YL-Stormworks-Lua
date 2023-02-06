@@ -7,30 +7,19 @@
 
 --[====[ IN-GAME CODE ]====]
 
-require("Math")
+require("PID")
 
-PitchSpeedTurnsPerSec = {
-    now = 0,
-    delta = 0,
-    update = function(self, nowval)
-        self.delta = nowval - self.now
-        self.now = nowval
-    end
-}
-elevatorOutput = 0
 targetPitchSpeedTurnsPerSec = property.getNumber("Pitch Speed [turns/s]")
 iGainAt40RPS = property.getNumber("Pitch I Gain at 40 RPS")
 lookaheadTicks = property.getNumber("Pitch Lookahead [ticks]")
+elevatorPID = SpeedPid.new(0, lookaheadTicks, -1, 1)
 
 function onTick()
     mode = 1
-    PitchSpeedTurnsPerSec:update(input.getNumber(8))
+    pitchSpeedTurnsPerSec = input.getNumber(8)
     seatPitchInput = input.getNumber(31)
+    local targetPitchSpeedTurnsPerSec = targetPitchSpeedTurnsPerSec * seatPitchInput
     propRPS = math.max(input.getNumber(32), 6.666)
-    iGain = iGainAt40RPS * 40 / propRPS
-    elevatorOutput = clamp(elevatorOutput +
-        (
-        targetPitchSpeedTurnsPerSec * seatPitchInput -
-            (PitchSpeedTurnsPerSec.now + PitchSpeedTurnsPerSec.delta * lookaheadTicks)) * iGain, -1, 1)
-    output.setNumber(2, elevatorOutput)
+    elevatorPID.iGain = iGainAt40RPS * 40 / propRPS
+    output.setNumber(2, elevatorPID:process(targetPitchSpeedTurnsPerSec, pitchSpeedTurnsPerSec))
 end
