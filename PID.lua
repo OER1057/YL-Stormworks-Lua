@@ -9,24 +9,30 @@
 
 require("Math")
 
-SpeedPid = {}
-SpeedPid.new = function(iGain, lookaheadTicks, limitMin, limitMax)
-    local obj = {}
-    obj.lastProcessVariable = 0
-    obj.iGain = iGain
-    obj.lookaheadTicks = lookaheadTicks
-    obj.output = 0
-    obj.limitMin = limitMin
-    obj.limitMax = limitMax
-    function obj.process(self, setPoint, processVariable) -- obj:processにするとminifyでバグる
-        local processVariableDelta = processVariable - self.lastProcessVariable
-        self.lastProcessVariable = processVariable
-        self.output = clamp(self.output +
-            (setPoint - (processVariable + processVariableDelta * self.lookaheadTicks)) * self.iGain
-            , self.limitMin
-            , self.limitMax)
-        return self.output
+SpeedPid = {
+    new = function(iGain, lookaheadTicks, limitMin, limitMax)
+        return {
+            lastProcessVariable = 0,
+            iGain = iGain,
+            lookaheadTicks = lookaheadTicks,
+            output = 0,
+            limitMin = limitMin,
+            limitMax = limitMax,
+            process = function(self, setPoint, processVariable) -- obj:processにするとminifyでバグる
+                local processVariableDelta = processVariable - self.lastProcessVariable
+                self.lastProcessVariable = processVariable
+                self.output = clamp(self.output +
+                    (setPoint - (processVariable + processVariableDelta * self.lookaheadTicks)) * self.iGain
+                    , self.limitMin
+                    , self.limitMax)
+                return self.output
+            end
+        }
     end
+}
 
-    return obj
-end
+-- 一般的な定数
+
+maxThrottle = 1
+turbineMinThrottle = 0.01
+turbineStartRPS = 0.5
