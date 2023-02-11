@@ -10,7 +10,7 @@
 do
     ---@type Simulator -- Set properties and screen sizes here - will run once when the script is loaded
     simulator = simulator
-    simulator:setScreen(1, "3x3")
+    simulator:setScreen(1, "2x1")
     simulator:setProperty("NAVI Default State", true)
     -- Runs every tick just before onTick; allows you to simulate the inputs changing
     ---@param simulator Simulator Use simulator:<function>() to set inputs etc.
@@ -29,44 +29,42 @@ end
 
 
 --[====[ IN-GAME CODE ]====]
-
 require("Campbell")
 
-function inarea(n, x, y) return area[n][1] <= x and x < area[n][1] + area[n][3] and area[n][2] <= y and
-        y < area[n][2] + area[n][4];
-end
+require("MonitorButton")
 
-area = {}
-for x = 1, 2 do
-    for y = 0, 2 do
-        area[2 * y + x] = { -21 + 29 * x, 11 + 7 * y, 19, 5 }
+buttons = {}
+buttonWidth = 19
+buttonHeight = 5
+buttonIntervalX = 29
+buttonIntervalY = 7
+
+do
+    local buttonName = { "NAVI", "LOGO", "BCON", "TAXI", "STRB", "LNDG" }
+    for index, name in ipairs(buttonName) do
+        local x = (index - 1) % 2 -- 0,1,0,1,0,1
+        local y = math.floor((index - 1) / 2) -- 0,0,1,1,2,2
+        TouchArea:addArea(name, 8 + buttonIntervalX * x, 11 + buttonIntervalY * y, buttonWidth, buttonHeight)
+        local defaultState = property.getBool(name .. " Default State")
+        buttons[name] = ToggleButton.new(defaultState, 1, 1)
     end
 end
-switchLabel = { "NAVI", "LOGO", "BCON", "TAXI", "STRB", "LNDG" }
-switchState = { property.getBool("NAVI Default State"),
-    property.getBool("LOGO Default State"),
-    property.getBool("BCON Default State"),
-    property.getBool("TAXI Default State"),
-    property.getBool("STRB Default State"),
-    property.getBool("LNDG Default State") }
 
 function onTick()
     isTouched = input.getBool(1)
     touchX = input.getNumber(3)
     touchY = input.getNumber(4)
-    if isTouched then
-        pushingTime = pushingTime + 1 or 0
-    else
-        pushingTime = 0
+    TouchArea:update(isTouched, touchX, touchY)
+    for name, button in pairs(buttons) do
+        button:update(TouchArea.whichArea == name)
+        output.setBool(index, button.isOn)
     end
-    isTouchedNow = pushingTime == 1
-    for num = 1, #area do
-        if isTouchedNow and inarea(num, touchX, touchY) then
-            switchState[num] = not switchState[num]
-        end
-        output.setBool(num, switchState[num])
-    end
-    -- end
+    output.setBool(1, buttons["NAVI"].isOn)
+    output.setBool(2, buttons["LOGO"].isOn)
+    output.setBool(3, buttons["BCON"].isOn)
+    output.setBool(4, buttons["TAXI"].isOn)
+    output.setBool(5, buttons["STRB"].isOn)
+    output.setBool(6, buttons["LNDG"].isOn)
 end
 
 function onDraw()
@@ -75,12 +73,13 @@ function onDraw()
     bwhite()
     screen.drawText(8, 1, "EXT");
     screen.drawText(27, 1, "LIGHTS")
-    for num = 1, #area do
+    for name, button in pairs(buttons) do
         bwhite()
-        screen.drawText(area[num][1], area[num][2], switchLabel[num])
-        if switchState[num] then
+        screen.drawText(TouchArea.areaList[name].xStart, TouchArea.areaList[name].yStart, name)
+        if buttons[name].isOn then
             bgreen()
-            screen.drawRectF(area[num][1], area[num][2] + area[num][4], area[num][3], 1)
+            screen.drawRectF(TouchArea.areaList[name].xStart, TouchArea.areaList[name].yStart + buttonHeight, buttonWidth,
+                1)
         end
     end
 end
