@@ -6,8 +6,28 @@
 --- If you have any issues, please report them here: https://github.com/nameouschangey/STORMWORKS_VSCodeExtension/issues - by Nameous Changey
 
 --[====[ IN-GAME CODE ]====]
-
 require("Math")
+
+NormalPid = {
+    new = function(pGain, lookaheadTicks, limitMin, limitMax)
+        return {
+            lastProcessVariable = 0,
+            pGain = pGain,
+            lookaheadTicks = lookaheadTicks,
+            output = 0,
+            limitMin = limitMin,
+            limitMax = limitMax,
+            process = function(self, setPoint, processVariable)
+                local processVariableDelta = processVariable - self.lastProcessVariable
+                self.lastProcessVariable = processVariable
+                self.output = clamp(
+                    setPoint - (processVariable + processVariableDelta * self.lookaheadTicks) * self.iGain
+                    , self.limitMin, self.limitMax)
+                return self.output
+            end
+        }
+    end
+}
 
 SpeedPid = {
     new = function(iGain, lookaheadTicks, limitMin, limitMax)
@@ -18,13 +38,13 @@ SpeedPid = {
             output = 0,
             limitMin = limitMin,
             limitMax = limitMax,
-            process = function(self, setPoint, processVariable) -- obj:processにするとminifyでバグる
+            process = function(self, setPoint, processVariable)
                 local processVariableDelta = processVariable - self.lastProcessVariable
                 self.lastProcessVariable = processVariable
-                self.output = clamp(self.output +
+                self.output = clamp(
+                    self.output +
                     (setPoint - (processVariable + processVariableDelta * self.lookaheadTicks)) * self.iGain
-                    , self.limitMin
-                    , self.limitMax)
+                    , self.limitMin, self.limitMax)
                 return self.output
             end
         }
