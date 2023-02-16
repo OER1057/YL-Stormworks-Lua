@@ -20,7 +20,7 @@ PushButton = {
                 end
             end,
             isPushedNow = function(self)
-                return self.pushingTime == 0
+                return self.pushingTime == 1
             end
         }
     end
