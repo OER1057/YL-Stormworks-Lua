@@ -78,20 +78,32 @@ Sensor = {
         return input.getNumber(_WIND_SENSOR_DIRECTION_CHANNEL)
     end,
     -- 別表現
-    getGpsX = Sensor.getXPositionMeter(),
-    getGpsY = Sensor.getZPositionMeter(),
-    getAltitudeMeter = Sensor.getYPositionMeter(),
-    getRollSpeedTurnsPerSec = -Sensor.getXAngularVelocityTurnsPerSec(),
-    getPitchSpeedTurnsPerSec = -Sensor.getZAngularVelocityTurnsPerSec(),
-    getYawSpeedTurnsPerSec = Sensor.getYAngularVelocityTurnsPerSec(),
+    getGpsX = function(self)
+        return self.getXPositionMeter()
+    end,
+    getGpsY = function(self)
+        return self.getZPositionMeter()
+    end,
+    getAltitudeMeter = function(self)
+        return self.getYPositionMeter()
+    end,
+    -- getRollSpeedTurnsPerSec = function(self)
+    --     return -self.getXAngularVelocityTurnsPerSec()
+    -- end,
+    -- getPitchSpeedTurnsPerSec = function(self)
+    --     return -self.getZAngularVelocityTurnsPerSec()
+    -- end,
+    -- getYawSpeedTurnsPerSec = function(self)
+    --     self.getYAngularVelocityTurnsPerSec()
+    -- end,
     -- 計算値
-    getRollRad = function()
-        return input.getNumber(0)
-    end,
-    getPitchRad = function()
-        return input.getNumber(0)
-    end,
-    getHeadingDeg = function()
-        return input.getNumber(0)
-    end,
+    -- getRollRad = function()
+    --     return
+    -- end,
+    -- getPitchRad = function()
+    --     return
+    -- end,
+    -- getHeadingDeg = function()
+    --     return
+    -- end,
 }
