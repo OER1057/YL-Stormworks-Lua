@@ -21,7 +21,7 @@ NormalPid = {
                 local processVariableDelta = processVariable - self.lastProcessVariable
                 self.lastProcessVariable = processVariable
                 self.output = clamp(
-                    setPoint - (processVariable + processVariableDelta * self.lookaheadTicks) * self.iGain
+                    setPoint - (processVariable + processVariableDelta * self.lookaheadTicks) * self.pGain
                     , self.limitMin, self.limitMax)
                 return self.output
             end
@@ -41,10 +41,10 @@ SpeedPid = {
             process = function(self, setPoint, processVariable)
                 local processVariableDelta = processVariable - self.lastProcessVariable
                 self.lastProcessVariable = processVariable
-                self.output = clamp(
-                    self.output +
-                    (setPoint - (processVariable + processVariableDelta * self.lookaheadTicks)) * self.iGain
-                    , self.limitMin, self.limitMax)
+                self.output = clamp(self.output +
+                (setPoint - (processVariable + processVariableDelta * self.lookaheadTicks)) * self.iGain
+                    , self.limitMin
+                    , self.limitMax)
                 return self.output
             end
         }
