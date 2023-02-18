@@ -7,6 +7,11 @@
 
 --[====[ IN-GAME CODE ]====]
 require("PID")
+require("SensorsLegacy")
+
+MODE_CHANNEL = 20
+SEAT_CHANNEL = 21
+RPS_CHANNEL = 22
 
 MODE_NOT_SELECTED = 0
 MODE_DIRECT = 1
@@ -39,13 +44,13 @@ function fpaRate()
 end
 
 function onTick()
-    alt:update(input.getNumber(3))
-    pitchSpeedTurnsPerSec = input.getNumber(8)
-    gpsX:update(input.getNumber(10))
-    gpsY:update(input.getNumber(11))
-    mode = input.getNumber(30)
-    seatPitchInput = input.getNumber(31)
-    propRPS = math.max(input.getNumber(32), 6.666)
+    alt:update(Sensor:getAltitudeMeter())
+    pitchSpeedTurnsPerSec = Sensor:getPitchSpeedTurnsPerSec()
+    gpsX:update(Sensor:getGpsX())
+    gpsY:update(Sensor:getGpsY())
+    mode = input.getNumber(MODE_CHANNEL)
+    seatPitchInput = input.getNumber(SEAT_CHANNEL)
+    propRPS = math.max(input.getNumber(RPS_CHANNEL), 6.666)
     if mode == MODE_NOT_SELECTED or mode == MODE_LOCK then
         -- do nothing
     else
