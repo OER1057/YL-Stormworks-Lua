@@ -51,15 +51,14 @@ function drm(x, y, v)
 end
 
 function onTick()
-    airSpeed = Sensor:getAirSpeedMps() * _MPS_TO_KPS
+    airSpeed = clamp(Sensor:getAirSpeedMps() * _MPS_TO_KPS, 0, 999)
     -- groundSpeed = Sensor:getGroundSpeedMps()
-    groundSpeed = 0
-    pressureAltitude = Sensor:getAltitudeMeter()
+    pressureAltitude = clamp(Sensor:getAltitudeMeter(), 0, 999)
     radarAltitude = Sensor:getRadarAltitudeMeter()
     rollRad = Sensor:getRollRad()
     pitchNormal = Sensor:getPitchRad() / _TURNS_TO_RAD
     headingDeg = Sensor:getHeadingDeg()
-    flightPathDeg = 0
+    -- flightPathDeg = 0
 end
 
 function onDraw()
