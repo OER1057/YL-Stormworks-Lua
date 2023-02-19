@@ -48,4 +48,7 @@ Sensor = {
     getHeadingTurns = function()
         return input.getNumber(12)
     end,
+    getHeadingDeg = function()
+        return (input.getNumber(12) * _TURNS_TO_DEG + 360) % 360
+    end
 }
