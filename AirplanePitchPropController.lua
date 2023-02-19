@@ -29,7 +29,7 @@ speedElevatorPID = SpeedPid.new(0, 0, -1, 1)
 maxFPAAngleRate = math.tan(property.getNumber("Hold Flight Path Angle [deg]") * math.pi / 180)
 holdPGain = property.getNumber("Hold P Gain")
 holdLookaheadTicks = property.getNumber("Hold Lookahead [ticks]")
-fpaSpeedPID = NormalPid.new(holdPGain, holdLookaheadTicks, -maxPitchSpeedTurnsPerSec, pitchSpeedTurnsPerSec)
+fpaSpeedPID = NormalPid.new(holdPGain, holdLookaheadTicks, -maxPitchSpeedTurnsPerSec, maxPitchSpeedTurnsPerSec)
 
 altFPAPID = {}
 
@@ -49,10 +49,11 @@ function onTick()
     gpsX:update(Sensor:getGpsX())
     gpsY:update(Sensor:getGpsY())
     mode = input.getNumber(MODE_CHANNEL)
+    -- mode = MODE_HOLD
     seatPitchInput = input.getNumber(SEAT_CHANNEL)
     propRPS = math.max(input.getNumber(RPS_CHANNEL), 6.666)
     if mode == MODE_NOT_SELECTED or mode == MODE_LOCK then
-        -- do nothing
+        -- 出力値を維持
     else
         if mode == MODE_DIRECT then
             speedElevatorPID.output = seatPitchInput
@@ -61,7 +62,7 @@ function onTick()
                 targetPitchSpeedTurnsPerSec = maxPitchSpeedTurnsPerSec * seatPitchInput
             else
                 if mode == MODE_HOLD then
-                    targetFPARate = maxFPAAngleRate * seatPitchInput
+                    targetFPARate = -maxFPAAngleRate * seatPitchInput -- マイナス入力で上昇
                 else
                     if mode == MODE_AUTOPILOT then
                         targetFPARate = 0
@@ -69,7 +70,7 @@ function onTick()
                         targetFPARate = 0
                     end
                 end
-                targetPitchSpeedTurnsPerSec = fpaSpeedPID:process(targetFPARate, fpaRate())
+                targetPitchSpeedTurnsPerSec = -fpaSpeedPID:process(targetFPARate, fpaRate()) -- ピッチアップは負回転
             end
             speedElevatorPID.iGain = stabilizeIGainAt40RPS * 40 / propRPS
             speedElevatorPID.lookaheadTicks = stabilizeLookaheadTicks
