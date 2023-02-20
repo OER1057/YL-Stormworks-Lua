@@ -6,6 +6,7 @@
 --- If you have any issues, please report them here: https://github.com/nameouschangey/STORMWORKS_VSCodeExtension/issues - by Nameous Changey
 
 --[====[ IN-GAME CODE ]====]
+require("Math")
 -- チャンネル
 _ALT_OFFSET_CHANNEL = 32
 _BOTTOM_DISTANCE_SENSOR_CHANNEL = 30
@@ -18,6 +19,24 @@ _TURNS_TO_RAD = 2 * math.pi
 _TURNS_TO_DEG = 360
 _RAD_TO_DEG = 180 / math.pi
 _MPS_TO_KPS = 60 * 60 / 1000
+_TICKS_TO_SEC = 1 / 62
+
+function coordinateToHeadingDegree(north, east)
+    return (math.atan(east, north) * _RAD_TO_DEG + 360) % 360
+end
+
+function deltaToPerTicks(delta, rangeMin, rangeMax)
+    if delta < 0 then -- オーバーフローの可能性
+        fixedDelta = delta + (rangeMax - rangeMin) -- (x + delta + range) - x
+    else -- アンダーフローの可能性
+        fixedDelta = delta - (rangeMax - rangeMin) -- (x + delta - range) - x
+    end
+    if math.abs(delta) < math.abs(fixedDelta) then -- 補正後より変化量が小さかったら
+        return delta -- 補正前
+    else
+        return fixedDelta
+    end
+end
 
 Sensor = {
     -- センサ生値
@@ -73,7 +92,7 @@ Sensor = {
     end,
     ---- Wind Sensor
     getAirSpeedMps = function()
-        return input.getNumber(_WIND_SENSOR_SPEED_CHANNEL) * math.cos(Sensor.getAoaTurns * _TURNS_TO_RAD)
+        return input.getNumber(_WIND_SENSOR_SPEED_CHANNEL) * math.cos(Sensor:getAoaTurns() * _TURNS_TO_RAD)
     end,
     getAoaTurns = function()
         return input.getNumber(_WIND_SENSOR_DIRECTION_CHANNEL)
@@ -85,30 +104,71 @@ Sensor = {
     getGpsY = function(self)
         return self.getZPositionMeter()
     end,
+    getGpsNorth = function(self)
+        return self.getZPositionMeter()
+    end,
+    getGpsEast = function(self)
+        return self.getXPositionMeter()
+    end,
     getAltitudeMeter = function(self)
         return self.getYPositionMeter()
     end,
-    -- getRollSpeedTurnsPerSec = function(self)
-    --     return -self.getXAngularVelocityTurnsPerSec()
-    -- end,
-    -- getPitchSpeedTurnsPerSec = function(self)
-    --     return -self.getZAngularVelocityTurnsPerSec()
-    -- end,
-    -- getYawSpeedTurnsPerSec = function(self)
-    --     self.getYAngularVelocityTurnsPerSec()
-    -- end,
-    -- 計算値
-    -- getRollRad = function()
-    --     return
-    -- end,
-    -- getPitchRad = function(self)
-    --     return math.asin(math.sin(self:getXEulerRotationRad()))
-    -- end,
-    -- getHeadingDeg = function(self)
-    --     if math.cos(self:getXEulerRotationRad()) > 0 then
-    --         return (self:getYEulerRotationRad() * _RAD_TO_DEG + 360) % 360
-    --     else
-    --         return (( -self:getYEulerRotationRad() + math.pi) * _RAD_TO_DEG) % 360
-    --     end
-    -- end,
+    -- 計算
+    getIsInverted = function(self)
+        X = self:getXEulerRotationRad()
+        Y = self:getYEulerRotationRad()
+        Z = self:getZEulerRotationRad()
+        return math.sin(X) * math.sin(Y) * math.sin(Z) + math.cos(X) * math.cos(Z) < 0 -- y軸のY座標が負
+    end,
+    getRollRad = function(self)
+        -- ローカルx軸のXZ平面に対する角度(右向き正)
+        X = self:getXEulerRotationRad()
+        Y = self:getYEulerRotationRad()
+        Z = self:getZEulerRotationRad()
+        if self:getIsInverted() then
+            sign = -1
+        else
+            sign = 1
+        end
+        xTilt = math.atan(
+            -math.cos(Y) * math.sin(Z), -- xのY成分
+            sign * len( -- xのXZ平面への射影の絶対値
+                math.cos(Y) * math.cos(Z), -- xのX成分
+                -math.sin(Y))) -- xのZ成分
+        if sign > 0 then
+            return math.asin(math.sin(xTilt) / math.cos(self:getPitchRad())) -- 呪文
+        else
+            return math.pi - math.asin(math.sin(xTilt) / math.cos(self:getPitchRad()))
+        end
+    end,
+    getPitchRad2 = function(self) -- -pi to pi
+        -- ローカルz軸のXZ平面に対する角度(下向き正)
+        X = self:getXEulerRotationRad()
+        Y = self:getYEulerRotationRad()
+        Z = self:getZEulerRotationRad()
+        if self:getIsInverted() then -- 裏返しになっていない
+            sign = -1
+        else
+            sign = 1
+        end
+        return math.atan(
+            -math.cos(X) * math.sin(Y) * math.sin(Z) + math.sin(X) * math.cos(Z), -- zのY成分
+            sign * len( -- zのXZ平面への射影
+                math.cos(X) * math.sin(Y) * math.cos(Z) + math.sin(X) * math.sin(Z), -- zのX成分
+                math.cos(X) * math.cos(Y))) -- zのZ成分
+    end,
+    getPitchRad = function(self) -- -pi/2 to pi/2
+        pitchRad = self:getPitchRad2()
+        return math.atan(math.sin(pitchRad), math.abs(math.cos(pitchRad)))
+    end,
+    getHeadingDeg = function(self)
+        -- ローカルz軸のXZ平面への射影の方位
+        X = self:getXEulerRotationRad()
+        Y = self:getYEulerRotationRad()
+        Z = self:getZEulerRotationRad()
+        return
+            coordinateToHeadingDegree(
+                math.cos(X) * math.cos(Y), -- zのZ成分
+                math.cos(X) * math.sin(Y) * math.cos(Z) + math.sin(X) * math.sin(Z)) -- zのX成分
+    end,
 }

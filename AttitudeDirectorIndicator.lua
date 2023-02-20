@@ -29,7 +29,7 @@ end
 --[====[ IN-GAME CODE ]====]
 require("Campbell")
 require("Math")
-require("SensorsLegacy")
+require("Sensors")
 
 centerX = 32
 centerY = 32
@@ -50,15 +50,20 @@ function drm(x, y, v)
     screen.drawText(x + 10, y + 6 * (v % 1), math.floor(v % 10))
 end
 
+gpsNorth = Delta:new()
+gpsEast = Delta:new()
+
 function onTick()
-    airSpeed = clamp(Sensor:getAirSpeedMps() * _MPS_TO_KPS, 0, 999)
-    -- groundSpeed = Sensor:getGroundSpeedMps()
-    pressureAltitude = clamp(Sensor:getAltitudeMeter(), 0, 999)
-    radarAltitude = Sensor:getRadarAltitudeMeter()
+    gpsNorth:update(Sensor:getGpsNorth())
+    gpsEast:update(Sensor:getGpsEast())
     rollRad = Sensor:getRollRad()
     pitchNormal = Sensor:getPitchRad() / _TURNS_TO_RAD
     headingDeg = Sensor:getHeadingDeg()
-    -- flightPathDeg = 0
+    airSpeed = clamp(Sensor:getAirSpeedMps() * _MPS_TO_KPS, 0, 999)
+    pressureAltitude = clamp(Sensor:getAltitudeMeter(), 0, 999)
+    groundSpeed = len(gpsNorth.delta, gpsEast.delta) / _TICKS_TO_SEC
+    radarAltitude = Sensor:getRadarAltitudeMeter()
+    flightPathDeg = coordinateToHeadingDegree(gpsNorth.delta, gpsEast.delta)
 end
 
 function onDraw()
@@ -110,9 +115,9 @@ function onDraw()
     screen.drawText(26, 1, string.format("%03.0f", headingDeg))
     --bgreen()
     bwhite()
-    -- screen.drawText(1, 52, "GS")
-    -- screen.drawText(1, 58, string.format("%.0f", round(groundSpeed + 0.5)))
+    screen.drawText(1, 52, "GS")
+    screen.drawText(1, 58, string.format("%.0f", round(groundSpeed)))
     screen.drawText(49, 52, "RA")
-    screen.drawText(49, 58, string.format("%3.0f", round(radarAltitude + 0.5)))
-    -- screen.drawText(26, 58, string.format("%03.0f", flightPathDeg))
+    screen.drawText(49, 58, string.format("%3.0f", round(radarAltitude)))
+    screen.drawText(26, 58, string.format("%03.0f", flightPathDeg))
 end
