@@ -21,7 +21,7 @@ NormalPid = {
                 local processVariableDelta = processVariable - self.lastProcessVariable
                 self.lastProcessVariable = processVariable
                 self.output = clamp(
-                    setPoint - (processVariable + processVariableDelta * self.lookaheadTicks) * self.pGain
+                    (setPoint - (processVariable + processVariableDelta * self.lookaheadTicks)) * self.pGain
                     , self.limitMin, self.limitMax)
                 return self.output
             end
