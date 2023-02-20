@@ -12,6 +12,7 @@ require("SensorsLegacy")
 MODE_CHANNEL = 20
 SEAT_CHANNEL = 21
 RPS_CHANNEL = 22
+AP_TARGET_CHANNEL = 23
 
 MODE_NOT_SELECTED = 0
 MODE_DIRECT = 1
@@ -31,7 +32,9 @@ holdPGain = property.getNumber("Hold P Gain")
 holdLookaheadTicks = property.getNumber("Hold Lookahead [ticks]")
 fpaSpeedPID = NormalPid.new(holdPGain, holdLookaheadTicks, -maxPitchSpeedTurnsPerSec, maxPitchSpeedTurnsPerSec)
 
-altFPAPID = {}
+autopilotPGain = property.getNumber("Autopilot P Gain")
+autopilotLookaheadTicks = property.getNumber("Autopilot Lookahead [ticks]")
+altFPAPID = NormalPid.new(autopilotPGain, autopilotLookaheadTicks, -maxFPAAngleRate, maxFPAAngleRate)
 
 gsFPAPID = {}
 
@@ -65,7 +68,8 @@ function onTick()
                     targetFPARate = -maxFPAAngleRate * seatPitchInput -- マイナス入力で上昇
                 else
                     if mode == MODE_AUTOPILOT then
-                        targetFPARate = 0
+                        targetAltitule = input.getNumber(AP_TARGET_CHANNEL)
+                        targetFPARate = altFPAPID:process(targetAltitule, alt.lastValue)
                     elseif mode == MODE_LANDING then
                         targetFPARate = 0
                     end
