@@ -25,6 +25,19 @@ function coordinateToHeadingDegree(north, east)
     return (math.atan(east, north) * _RAD_TO_DEG + 360) % 360
 end
 
+function deltaToPerTicks(delta, rangeMin, rangeMax)
+    if delta < 0 then -- オーバーフローの可能性
+        fixedDelta = delta + (rangeMax - rangeMin) -- (x + delta + range) - x
+    else -- アンダーフローの可能性
+        fixedDelta = delta - (rangeMax - rangeMin) -- (x + delta - range) - x
+    end
+    if math.abs(delta) < math.abs(fixedDelta) then -- 補正後より変化量が小さかったら
+        return delta -- 補正前
+    else
+        return fixedDelta
+    end
+end
+
 Sensor = {
     -- センサ生値
     ---- Physics Sensor
@@ -100,15 +113,22 @@ Sensor = {
     getAltitudeMeter = function(self)
         return self.getYPositionMeter()
     end,
+    -- 計算
+    getIsInverted = function(self)
+        X = self:getXEulerRotationRad()
+        Y = self:getYEulerRotationRad()
+        Z = self:getZEulerRotationRad()
+        return math.sin(X) * math.sin(Y) * math.sin(Z) + math.cos(X) * math.cos(Z) < 0 -- y軸のY座標が負
+    end,
     getRollRad = function(self)
         -- ローカルx軸のXZ平面に対する角度(右向き正)
         X = self:getXEulerRotationRad()
         Y = self:getYEulerRotationRad()
         Z = self:getZEulerRotationRad()
-        if math.sin(X) * math.sin(Y) * math.sin(Z) + math.cos(X) * math.cos(Z) > 0 then -- 裏返しになっていない
-            sign = 1
-        else -- 裏返しになっている
+        if self:getIsInverted() then
             sign = -1
+        else
+            sign = 1
         end
         xTilt = math.atan(
             -math.cos(Y) * math.sin(Z), -- xのY成分
@@ -121,16 +141,25 @@ Sensor = {
             return math.pi - math.asin(math.sin(xTilt) / math.cos(self:getPitchRad()))
         end
     end,
-    getPitchRad = function(self)
+    getPitchRad2 = function(self) -- -pi to pi
         -- ローカルz軸のXZ平面に対する角度(下向き正)
         X = self:getXEulerRotationRad()
         Y = self:getYEulerRotationRad()
         Z = self:getZEulerRotationRad()
+        if self:getIsInverted() then -- 裏返しになっていない
+            sign = -1
+        else
+            sign = 1
+        end
         return math.atan(
             -math.cos(X) * math.sin(Y) * math.sin(Z) + math.sin(X) * math.cos(Z), -- zのY成分
-            len( -- zのXZ平面への射影の絶対値
+            sign * len( -- zのXZ平面への射影
                 math.cos(X) * math.sin(Y) * math.cos(Z) + math.sin(X) * math.sin(Z), -- zのX成分
                 math.cos(X) * math.cos(Y))) -- zのZ成分
+    end,
+    getPitchRad = function(self) -- -pi/2 to pi/2
+        pitchRad = self:getPitchRad2()
+        return math.atan(math.sin(pitchRad), math.abs(math.cos(pitchRad)))
     end,
     getHeadingDeg = function(self)
         -- ローカルz軸のXZ平面への射影の方位
@@ -142,5 +171,4 @@ Sensor = {
                 math.cos(X) * math.cos(Y), -- zのZ成分
                 math.cos(X) * math.sin(Y) * math.cos(Z) + math.sin(X) * math.sin(Z)) -- zのX成分
     end,
-    -- 要微分
 }

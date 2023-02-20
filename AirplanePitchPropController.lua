@@ -7,7 +7,7 @@
 
 --[====[ IN-GAME CODE ]====]
 require("PID")
-require("SensorsLegacy")
+require("Sensors")
 
 MODE_CHANNEL = 20
 SEAT_CHANNEL = 21
@@ -38,6 +38,7 @@ altFPAPID = NormalPid.new(autopilotPGain, autopilotLookaheadTicks, -maxFPAAngleR
 
 gsFPAPID = {}
 
+pitchRad = Delta.new()
 gpsX = Delta.new()
 gpsY = Delta.new()
 alt = Delta.new()
@@ -47,12 +48,12 @@ function fpaRate()
 end
 
 function onTick()
+    pitchRad:update(Sensor:getPitchRad2())
     alt:update(Sensor:getAltitudeMeter())
-    pitchSpeedTurnsPerSec = Sensor:getPitchSpeedTurnsPerSec()
+    pitchSpeedTurnsPerSec = deltaToPerTicks(pitchRad.delta, -math.pi, math.pi) / _TURNS_TO_RAD / _TICKS_TO_SEC
     gpsX:update(Sensor:getGpsX())
     gpsY:update(Sensor:getGpsY())
     mode = input.getNumber(MODE_CHANNEL)
-    -- mode = MODE_HOLD
     seatPitchInput = input.getNumber(SEAT_CHANNEL)
     propRPS = math.max(input.getNumber(RPS_CHANNEL), 6.666)
     if mode == MODE_NOT_SELECTED or mode == MODE_LOCK then
