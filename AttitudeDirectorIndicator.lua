@@ -27,9 +27,9 @@ end
 ---@endsection
 
 --[====[ IN-GAME CODE ]====]
-
 require("Campbell")
 require("Math")
+require("SensorsLegacy")
 
 centerX = 32
 centerY = 32
@@ -51,14 +51,14 @@ function drm(x, y, v)
 end
 
 function onTick()
-    airSpeed = clamp(input.getNumber(1), 0, 999)
-    groundSpeed = input.getNumber(2) * 60 * 60 * 60 / 1000
-    pressureAltitude = clamp(input.getNumber(3), 0, 999)
-    radarAltitude = input.getNumber(4)
-    rollRad = input.getNumber(5) * math.pi * 2
-    pitchNormal = input.getNumber(6)
-    headingDeg = (input.getNumber(12) * 360 + 360) % 360
-    flightPathDeg = (input.getNumber(13) * 360 + 360) % 360
+    airSpeed = clamp(Sensor:getAirSpeedMps() * _MPS_TO_KPS, 0, 999)
+    -- groundSpeed = Sensor:getGroundSpeedMps()
+    pressureAltitude = clamp(Sensor:getAltitudeMeter(), 0, 999)
+    radarAltitude = Sensor:getRadarAltitudeMeter()
+    rollRad = Sensor:getRollRad()
+    pitchNormal = Sensor:getPitchRad() / _TURNS_TO_RAD
+    headingDeg = Sensor:getHeadingDeg()
+    -- flightPathDeg = 0
 end
 
 function onDraw()
@@ -66,10 +66,10 @@ function onDraw()
     screen.drawClear()
     d0 = pitchNormal * 360 / 45
     yellow()
-    drawSquareF(centerX + pitchScaleSize * (-d0 * math.sin(rollRad) + 1.5 * math.cos(rollRad)),
-        centerY + pitchScaleSize * (-d0 * math.cos(rollRad) - 1.5 * math.sin(rollRad)),
-        centerX + pitchScaleSize * (-d0 * math.sin(rollRad) - 1.5 * math.cos(rollRad)),
-        centerY + pitchScaleSize * (-d0 * math.cos(rollRad) + 1.5 * math.sin(rollRad)),
+    drawSquareF(centerX + pitchScaleSize * ( -d0 * math.sin(rollRad) + 1.5 * math.cos(rollRad)),
+        centerY + pitchScaleSize * ( -d0 * math.cos(rollRad) - 1.5 * math.sin(rollRad)),
+        centerX + pitchScaleSize * ( -d0 * math.sin(rollRad) - 1.5 * math.cos(rollRad)),
+        centerY + pitchScaleSize * ( -d0 * math.cos(rollRad) + 1.5 * math.sin(rollRad)),
         centerX + pitchScaleSize * ((3 - d0) * math.sin(rollRad) - 1.5 * math.cos(rollRad)),
         centerY + pitchScaleSize * ((3 - d0) * math.cos(rollRad) + 1.5 * math.sin(rollRad)),
         centerX + pitchScaleSize * ((3 - d0) * math.sin(rollRad) + 1.5 * math.cos(rollRad)),
@@ -78,15 +78,15 @@ function onDraw()
     bwhite()
     for p = pitchScaleIntervalDegree, 90, pitchScaleIntervalDegree do
         d = (pitchNormal * 360 + p) / 45
-        screen.drawLine(centerX + pitchScaleSize * (-d * math.sin(rollRad) + 0.5 * math.cos(rollRad)),
-            centerY + pitchScaleSize * (-d * math.cos(rollRad) - 0.5 * math.sin(rollRad)),
-            centerX + pitchScaleSize * (-d * math.sin(rollRad) - 0.5 * math.cos(rollRad)),
-            centerY + pitchScaleSize * (-d * math.cos(rollRad) + 0.5 * math.sin(rollRad)))
+        screen.drawLine(centerX + pitchScaleSize * ( -d * math.sin(rollRad) + 0.5 * math.cos(rollRad)),
+            centerY + pitchScaleSize * ( -d * math.cos(rollRad) - 0.5 * math.sin(rollRad)),
+            centerX + pitchScaleSize * ( -d * math.sin(rollRad) - 0.5 * math.cos(rollRad)),
+            centerY + pitchScaleSize * ( -d * math.cos(rollRad) + 0.5 * math.sin(rollRad)))
         d = (pitchNormal * 360 - p) / 45
-        screen.drawLine(centerX + pitchScaleSize * (-d * math.sin(rollRad) + 0.5 * math.cos(rollRad)),
-            centerY + pitchScaleSize * (-d * math.cos(rollRad) - 0.5 * math.sin(rollRad)),
-            centerX + pitchScaleSize * (-d * math.sin(rollRad) - 0.5 * math.cos(rollRad)),
-            centerY + pitchScaleSize * (-d * math.cos(rollRad) + 0.5 * math.sin(rollRad)))
+        screen.drawLine(centerX + pitchScaleSize * ( -d * math.sin(rollRad) + 0.5 * math.cos(rollRad)),
+            centerY + pitchScaleSize * ( -d * math.cos(rollRad) - 0.5 * math.sin(rollRad)),
+            centerX + pitchScaleSize * ( -d * math.sin(rollRad) - 0.5 * math.cos(rollRad)),
+            centerY + pitchScaleSize * ( -d * math.cos(rollRad) + 0.5 * math.sin(rollRad)))
     end
 
     screen.setColor(0, 0, 0, 127)
@@ -110,9 +110,9 @@ function onDraw()
     screen.drawText(26, 1, string.format("%03.0f", headingDeg))
     --bgreen()
     bwhite()
-    screen.drawText(1, 52, "GS")
-    screen.drawText(1, 58, math.floor(groundSpeed + 0.5))
+    -- screen.drawText(1, 52, "GS")
+    -- screen.drawText(1, 58, string.format("%.0f", round(groundSpeed + 0.5)))
     screen.drawText(49, 52, "RA")
-    screen.drawText(49, 58, math.floor(radarAltitude + 0.5))
-    screen.drawText(26, 58, string.format("%03.0f", flightPathDeg))
+    screen.drawText(49, 58, string.format("%3.0f", round(radarAltitude + 0.5)))
+    -- screen.drawText(26, 58, string.format("%03.0f", flightPathDeg))
 end

@@ -16,6 +16,7 @@ _WIND_SENSOR_DIRECTION_CHANNEL = 27
 -- 単位換算
 _TURNS_TO_RAD = 2 * math.pi
 _TURNS_TO_DEG = 360
+_RAD_TO_DEG = 180 / math.pi
 _MPS_TO_KPS = 60 * 60 / 1000
 
 Sensor = {
@@ -100,10 +101,14 @@ Sensor = {
     -- getRollRad = function()
     --     return
     -- end,
-    -- getPitchRad = function()
-    --     return
+    -- getPitchRad = function(self)
+    --     return math.asin(math.sin(self:getXEulerRotationRad()))
     -- end,
-    -- getHeadingDeg = function()
-    --     return
+    -- getHeadingDeg = function(self)
+    --     if math.cos(self:getXEulerRotationRad()) > 0 then
+    --         return (self:getYEulerRotationRad() * _RAD_TO_DEG + 360) % 360
+    --     else
+    --         return (( -self:getYEulerRotationRad() + math.pi) * _RAD_TO_DEG) % 360
+    --     end
     -- end,
 }
