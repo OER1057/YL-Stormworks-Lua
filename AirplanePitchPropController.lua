@@ -25,7 +25,7 @@ MODE_LOCK = -1
 maxPitchSpeedTurnsPerSec = property.getNumber("Pitch Speed [turns/s]")
 stabilizeIGainAt40RPS = property.getNumber("Stabilize I Gain at 40 RPS")
 stabilizeLookaheadTicks = property.getNumber("Stabilize Lookahead [ticks]")
-speedElevatorPID = SpeedPid.new(0, 0, -1, 1)
+speedElevatorPID = SpeedPid.new(0, stabilizeLookaheadTicks, -1, 1)
 
 maxFPAAngleRate = math.tan(property.getNumber("Hold Flight Path Angle [deg]") * math.pi / 180)
 holdPGain = property.getNumber("Hold P Gain")
@@ -48,18 +48,17 @@ function fpaRate()
 end
 
 function onTick()
-    pitchRad:update(Sensor:getPitchRad2())
-    alt:update(Sensor:getAltitudeMeter())
-    pitchSpeedTurnsPerSec = deltaToPerTicks(pitchRad.delta, -math.pi, math.pi) / _TURNS_TO_RAD / _TICKS_TO_SEC
-    -- ↑これは水平面に対するピッチなので正確な角速度ではない
-    gpsX:update(Sensor:getGpsX())
-    gpsY:update(Sensor:getGpsY())
     mode = input.getNumber(MODE_CHANNEL)
-    -- mode = MODE_HOLD
     seatPitchInput = input.getNumber(SEAT_CHANNEL)
     propRPS = math.max(input.getNumber(RPS_CHANNEL), 6.666)
+
+    pitchSpeedTurnsPerSec = Sensor:getPitchSpeedRadPerSec() / _TURNS_TO_RAD
+
+    alt:update(Sensor:getAltitudeMeter())
+    gpsX:update(Sensor:getGpsX())
+    gpsY:update(Sensor:getGpsY())
+
     if mode == MODE_NOT_SELECTED or mode == MODE_LOCK then
-        -- 出力値を維持
     else
         if mode == MODE_DIRECT then
             speedElevatorPID.output = seatPitchInput
@@ -80,9 +79,8 @@ function onTick()
                 targetPitchSpeedTurnsPerSec = -fpaSpeedPID:process(targetFPARate, fpaRate()) -- ピッチアップは負回転
             end
             speedElevatorPID.iGain = stabilizeIGainAt40RPS * 40 / propRPS
-            speedElevatorPID.lookaheadTicks = stabilizeLookaheadTicks
             speedElevatorPID:process(targetPitchSpeedTurnsPerSec, pitchSpeedTurnsPerSec)
         end
     end
-    output.setNumber(2, speedElevatorPID.output)
+    output.setNumber(1, speedElevatorPID.output)
 end

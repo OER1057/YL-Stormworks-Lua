@@ -17,9 +17,11 @@ _WIND_SENSOR_DIRECTION_CHANNEL = 27
 -- 単位換算
 _TURNS_TO_RAD = 2 * math.pi
 _TURNS_TO_DEG = 360
-_RAD_TO_DEG = 180 / math.pi
-_MPS_TO_KPS = 60 * 60 / 1000
-_TICKS_TO_SEC = 1 / 62
+_DEG_TO_RAD = math.pi / 180
+_RAD_TO_DEG = _DEG_TO_RAD ^ -1
+_MPS_TO_KPS = 3.6 -- 60 * 60 / 1000
+_SEC_TO_TICKS = 62
+_TICKS_TO_SEC = _SEC_TO_TICKS ^ -1
 
 function coordinateToHeadingDegree(north, east)
     return (math.atan(east, north) * _RAD_TO_DEG + 360) % 360
@@ -85,7 +87,10 @@ Sensor = {
     end,
     ---- Distance Sensor
     getRadarAltitudeMeter = function()
-        return input.getNumber(_BOTTOM_DISTANCE_SENSOR_CHANNEL) - input.getNumber(_ALT_OFFSET_CHANNEL)
+        return math.min( -- 海面を考慮し実高度と低いほうをとる
+                input.getNumber(_BOTTOM_DISTANCE_SENSOR_CHANNEL),
+                input.getNumber(2)
+            ) - input.getNumber(_ALT_OFFSET_CHANNEL)
     end,
     getFrontDistance = function()
         return input.getNumber(_FRONT_DISTANCE_SENSOR_CHANNEL) - input.getNumber(_FRONT_DISTANCE_OFFSET_CHANNEL)
@@ -170,5 +175,15 @@ Sensor = {
             coordinateToHeadingDegree(
                 math.cos(X) * math.cos(Y), -- zのZ成分
                 math.cos(X) * math.sin(Y) * math.cos(Z) + math.sin(X) * math.sin(Z)) -- zのX成分
+    end,
+    -- 暫定措置
+    getRollSpeedRadPerSec = function()
+        return input.getNumber(9) * _TURNS_TO_RAD
+    end,
+    getPitchSpeedRadPerSec = function()
+        return input.getNumber(7) * _TURNS_TO_RAD
+    end,
+    getYawSpeedRadPerSec = function()
+        return input.getNumber(8) * _TURNS_TO_RAD
     end,
 }
