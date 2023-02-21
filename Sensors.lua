@@ -14,20 +14,12 @@ _FRONT_DISTANCE_SENSOR_CHANNEL = 29
 _FRONT_DISTANCE_OFFSET_CHANNEL = 31
 _WIND_SENSOR_SPEED_CHANNEL = 28
 _WIND_SENSOR_DIRECTION_CHANNEL = 27
--- 単位換算
-_TURNS_TO_RAD = 2 * math.pi
-_TURNS_TO_DEG = 360
-_DEG_TO_RAD = math.pi / 180
-_RAD_TO_DEG = _DEG_TO_RAD ^ -1
-_MPS_TO_KPS = 3.6 -- 60 * 60 / 1000
-_SEC_TO_TICKS = 62
-_TICKS_TO_SEC = _SEC_TO_TICKS ^ -1
 
-function coordinateToHeadingDegree(north, east)
+function coordinateToHeadingDegree(north, east) -- Mathに移動(互換性のため維持)
     return (math.atan(east, north) * _RAD_TO_DEG + 360) % 360
 end
 
-function deltaToPerTicks(delta, rangeMin, rangeMax)
+function deltaToPerTicks(delta, rangeMin, rangeMax) -- Mathに移動(互換性のため維持)
     if delta < 0 then -- オーバーフローの可能性
         fixedDelta = delta + (rangeMax - rangeMin) -- (x + delta + range) - x
     else -- アンダーフローの可能性

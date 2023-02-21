@@ -1,3 +1,6 @@
+_FONT_WIDTH = 4
+_FONT_HEIGHT = 5
+
 function black()
     screen.setColor(0, 0, 0)
 end
@@ -12,7 +15,6 @@ end
 
 function green()
     screen.setColor(0, 21, 0)
-
 end
 
 function purple()
