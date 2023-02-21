@@ -22,9 +22,9 @@ MODE_LANDING = 5
 MODE_LOCK = -1
 
 maxRollSpeedTurnsPerSec = property.getNumber("Roll Speed [turns/s]")
-iGainAt400Kmph = property.getNumber("Stabilize I Gain at 400 km/h")
-lookaheadTicks = property.getNumber("Stabilize Lookahead [ticks]")
-speedAileronPID = SpeedPid.new(0, lookaheadTicks, -1, 1)
+stabilizeIGainAt400Kmph = property.getNumber("Stabilize I Gain at 400 km/h")
+stabilizeLookaheadTicks = property.getNumber("Stabilize Lookahead [ticks]")
+speedAileronPID = SpeedPid.new(0, stabilizeLookaheadTicks, -1, 1)
 
 maxRollRad = property.getNumber("Hold Roll Angle [deg]") * _DEG_TO_RAD
 holdPGain = property.getNumber("Hold P Gain")
@@ -69,11 +69,11 @@ function onTick()
                         targetFpdDeg = 0
                         -- targetFpdDeg = locFpdPID:process()
                     end
-                    targetRollRad = fpdRollPID:process(targetFpdDeg, fpdDeg)
+                    targetRollRad = fpdRollPID:process(0, -deltaToPerTicks(targetFpdDeg - fpdDeg, 0, 360)) -- なぜ負？
                 end
                 targetRollSpeedTurnsPerSec = rollSpeedPID:process(targetRollRad, rollRad)
             end
-            speedAileronPID.iGain = iGainAt400Kmph * 400 / (airSpeedMps * _MPS_TO_KPS)
+            speedAileronPID.iGain = stabilizeIGainAt400Kmph * 400 / (airSpeedMps * _MPS_TO_KPS)
             speedAileronPID:process(targetRollSpeedTurnsPerSec, rollSpeedTurnsPerSec)
         end
     end
