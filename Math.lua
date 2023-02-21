@@ -1,3 +1,12 @@
+-- 単位換算
+_TURNS_TO_RAD = 2 * math.pi
+_TURNS_TO_DEG = 360
+_DEG_TO_RAD = math.pi / 180
+_RAD_TO_DEG = _DEG_TO_RAD ^ -1
+_MPS_TO_KPS = 3.6 -- 60 * 60 / 1000
+_SEC_TO_TICKS = 62
+_TICKS_TO_SEC = _SEC_TO_TICKS ^ -1
+
 function clamp(val, min, max)
     return math.max(math.min(val, max), min)
 end
@@ -12,6 +21,25 @@ end
 
 function len(x, y)
     return math.sqrt(x ^ 2 + y ^ 2)
+end
+
+function coordinateToHeading(originNorth, originEast, targetNorth, targetEast) -- deg
+    return (math.atan(targetEast - originEast, targetNorth - originNorth) * _RAD_TO_DEG + 360) % 360
+end
+
+function move(after, before, rangeMin, rangeMax)
+    local move = after - before
+    local range = rangeMax - rangeMin
+    if move < 0 then -- オーバーフローの可能性
+        fixedMove = move + range -- (x + move + range) - x
+    else -- アンダーフローの可能性
+        fixedMove = move - range -- (x + move - range) - x
+    end
+    if math.abs(move) < math.abs(fixedMove) then -- 補正後より変化量が小さかったら
+        return move -- 補正前
+    else
+        return fixedMove
+    end
 end
 
 Delta = {
