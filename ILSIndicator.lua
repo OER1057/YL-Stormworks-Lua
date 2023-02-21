@@ -76,12 +76,15 @@ function onDraw()
     --
     bred()
     blinker:update()
-    -- 反対向き
-    if math.abs(hsiDirection) > 90 or hsiDistance < 0 then
+    -- ILS
+    if math.abs(hsiDirection) > 90 or hsiDistance < 0 then -- 前方でないときと通り過ぎたときはエラー表示
         if blinker.isOn then
-            screen.drawRect(centerX - viewRadius, centerY - viewRadius, 2 * viewRadius, 2 * viewRadius)
-            screen.drawRectF(centerX - viewRadius, hsiPositionY, 1, 1)
-            screen.drawRectF(centerX + viewRadius, hsiPositionY, 1, 1)
+            screen.drawLine(
+                centerX - viewRadius / 2, centerY - viewRadius / 2,
+                centerX + viewRadius / 2, centerY + viewRadius / 2)
+            screen.drawLine(
+                centerX + viewRadius / 2, centerY - viewRadius / 2,
+                centerX - viewRadius / 2, centerY + viewRadius / 2)
         end
     else
         -- 横棒
@@ -94,10 +97,10 @@ function onDraw()
             screen.drawRectF(centerX - viewRadius * clamp(ilsHorizontalGap / ilsLimit, -1, 1), centerY - viewRadius,
                 1, 2 * viewRadius)
         end
-        -- 下の点
-        if math.abs(hsiDirection) <= 45 or blinker.isOn then -- 左右45度範囲内でなければ点滅
-            screen.drawRectF(centerX + viewRadius * clamp(hsiDirection, -hsiLimit, hsiLimit) / hsiLimit, hsiPositionY,
-                1, 1)
-        end
+    end
+    -- HSI(方向表示)
+    if math.abs(hsiDirection) <= 45 or blinker.isOn then -- 左右45度範囲内でなければ点滅
+        screen.drawRectF(centerX + viewRadius * clamp(hsiDirection, -hsiLimit, hsiLimit) / hsiLimit, hsiPositionY,
+            1, 1)
     end
 end
