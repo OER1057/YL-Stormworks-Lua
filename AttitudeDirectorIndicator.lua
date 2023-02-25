@@ -59,9 +59,9 @@ function onTick()
     rollRad = Sensor:getRollRad()
     pitchNormal = Sensor:getPitchRad() / _TURNS_TO_RAD
     headingDeg = Sensor:getHeadingDeg()
-    airSpeed = clamp(Sensor:getAirSpeedMps() * _MPS_TO_KPS, 0, 999)
+    airSpeed = clamp(Sensor:getAirSpeedMps() * _MPS_TO_KPH, 0, 999)
     pressureAltitude = clamp(Sensor:getAltitudeMeter(), 0, 999)
-    groundSpeed = len(gpsNorth.delta, gpsEast.delta) / _TICKS_TO_SEC
+    groundSpeed = len(gpsNorth.delta, gpsEast.delta) / _TICKS_TO_SEC * _MPS_TO_KPH
     radarAltitude = Sensor:getRadarAltitudeMeter()
     flightPathDeg = coordinateToHeadingDegree(gpsNorth.delta, gpsEast.delta)
 end

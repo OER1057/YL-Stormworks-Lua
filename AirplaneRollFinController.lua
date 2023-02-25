@@ -73,7 +73,7 @@ function onTick()
                 end
                 targetRollSpeedTurnsPerSec = rollSpeedPID:process(targetRollRad, rollRad)
             end
-            speedAileronPID.iGain = stabilizeIGainAt400Kmph * 400 / (airSpeedMps * _MPS_TO_KPS)
+            speedAileronPID.iGain = stabilizeIGainAt400Kmph * 400 / (airSpeedMps * _MPS_TO_KPH)
             speedAileronPID:process(targetRollSpeedTurnsPerSec, rollSpeedTurnsPerSec)
         end
     end

@@ -9,11 +9,11 @@
 -- 単位換算
 _TURNS_TO_RAD = 2 * math.pi
 _TURNS_TO_DEG = 360
-_MPS_TO_KPS = 60 * 60 / 1000
+_MPS_TO_KPH = 60 * 60 / 1000
 
 Sensor = {
     getAirSpeedMps = function()
-        return input.getNumber(1) / _MPS_TO_KPS
+        return input.getNumber(1) / _MPS_TO_KPH
     end,
     getAltitudeMeter = function()
         return input.getNumber(3)

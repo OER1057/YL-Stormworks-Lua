@@ -16,7 +16,7 @@ _WIND_SENSOR_SPEED_CHANNEL = 28
 _WIND_SENSOR_DIRECTION_CHANNEL = 27
 
 function coordinateToHeadingDegree(north, east) -- Mathに移動(互換性のため維持)
-    return (math.atan(east, north) * _RAD_TO_DEG + 360) % 360
+    return (math.atan(east, north) * _RAD_TO_DEG) % 360
 end
 
 function deltaToPerTicks(delta, rangeMin, rangeMax) -- Mathに移動(互換性のため維持)
