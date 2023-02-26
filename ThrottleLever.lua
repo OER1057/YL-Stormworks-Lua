@@ -6,7 +6,6 @@
 --- If you have any issues, please report them here: https://github.com/nameouschangey/STORMWORKS_VSCodeExtension/issues - by Nameous Changey
 
 --[====[ IN-GAME CODE ]====]
-
 require("Math")
 require("SeatInputSmoother")
 
@@ -29,7 +28,7 @@ function onTick()
     if isLeverUpPushed then
         smoothedLeverInput:update(1)
     elseif isLeverDownPushed then
-        smoothedLeverInput:update(-1)
+        smoothedLeverInput:update( -1)
     else
         smoothedLeverInput:update(0)
     end

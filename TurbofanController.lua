@@ -6,13 +6,12 @@
 --- If you have any issues, please report them here: https://github.com/nameouschangey/STORMWORKS_VSCodeExtension/issues - by Nameous Changey
 
 --[====[ IN-GAME CODE ]====]
-
 require("PID")
 
 -- ターボファン固有設定値
 --iGain = 0.01
 iGain = 0.005
-throttlePID = SpeedPid.new(iGain, nil, turbineMinThrottle, maxThrottle)
+throttlePID = SpeedPID.new(iGain, nil, _TURBINE_MIN_THROTTLE, _MAX_THROTTLE)
 function lookaheadTicks(turbineRPS)
     -- return 224.073015965457 * turbineRPS ^ -0.52829968606074
     return 1 / (turbineRPS + 10) * 2000 + 12
@@ -23,21 +22,21 @@ maxRPS = property.getNumber("100% RPS")
 engineNumber = property.getNumber("Engine Number")
 
 function onTick()
-    throttleInputPercent = input.getNumber(1)
+    throttleInput = input.getNumber(1) -- %
     turbineRPS = input.getNumber(2)
     isEngineOn = input.getBool(engineNumber)
     isStarterOn = input.getBool(16)
 
     if isEngineOn then
         throttlePID.lookaheadTicks = lookaheadTicks(turbineRPS)
-        targetRPS = math.max(idleRPS, maxRPS * throttleInputPercent / 100)
+        targetRPS = math.max(idleRPS, maxRPS * throttleInput / 100)
         throttlePID:process(targetRPS, turbineRPS)
     else
         throttlePID.output = 0
     end
     output.setNumber(1, throttlePID.output)
 
-    if isEngineOn and isStarterOn and turbineRPS < turbineStartRPS then
+    if isEngineOn and isStarterOn and turbineRPS < _TURBINE_START_RPS then
         starterThrottle = 1
     else
         starterThrottle = 0

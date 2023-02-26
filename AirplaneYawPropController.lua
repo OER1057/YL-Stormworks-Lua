@@ -19,27 +19,27 @@ MODE_DIRECT = 1
 MODE_STABILIZE = 2
 MODE_TURN_COORDINATE = 3
 
-maxYawSpeedTurnsPerSec = property.getNumber("Yaw Speed [turns/s]")
+maxYawSpeed = property.getNumber("Yaw Speed [turns/s]") -- turns/s
 stabilizeIGainAt40RPS = property.getNumber("Stabilize I Gain at 40 RPS")
-stabilizeLookaheadTicks = property.getNumber("Stabilize Lookahead [ticks]")
-speedRudderPID = SpeedPid.new(0, stabilizeLookaheadTicks, -1, 1)
+stabilizeLookahead = property.getNumber("Stabilize Lookahead [ticks]")
+speedRudderPID = SpeedPID.new(0, stabilizeLookahead, -1, 1)
 
-gravityMpsPerSec = property.getNumber("Gravity [m/s/s]")
+gravity = property.getNumber("Gravity [m/s/s]") -- m/s/s
 
 gpsNorth = Delta.new()
 gpsEast = Delta.new()
 
 function onTick()
     mode = input.getNumber(MODE_CHANNEL)
-    seatYawInput = input.getNumber(SEAT_CHANNEL)
+    seatYawInput = input.getNumber(SEAT_CHANNEL) -- +-1(右)
     propRPS = math.max(input.getNumber(RPS_CHANNEL), 6.666)
 
-    yawSpeedTurnsPerSec = Sensor:getYawSpeedRadPerSec() / _TURNS_TO_RAD
+    yawSpeed = Sensor:getYawSpeedRadPerSec() / _TURNS_TO_RAD -- turns/s(右)
 
-    rollRad = Sensor:getRollRad()
+    roll = Sensor:getRollRad() -- rad(右)
     gpsNorth:update(Sensor:getGpsNorth())
     gpsEast:update(Sensor:getGpsEast())
-    groundSpeedMps = len(gpsNorth.delta, gpsEast.delta) / _TICKS_TO_SEC
+    groundSpeed = len(gpsNorth.delta, gpsEast.delta) / _TICKS_TO_SEC -- m/s
 
     if mode == MODE_NOT_SELECTED or mode == MODE_LOCK then
     else
@@ -47,12 +47,12 @@ function onTick()
             speedRudderPID.output = seatYawInput
         else
             if mode == MODE_STABILIZE then
-                targetYawSpeedTurnsPerSec = maxYawSpeedTurnsPerSec * seatYawInput
+                targetYawSpeed = maxYawSpeed * seatYawInput -- turns/s(右)
             elseif mode == MODE_TURN_COORDINATE then
-                targetYawSpeedTurnsPerSec = (gravityMpsPerSec * math.sin(rollRad)) / groundSpeedMps / _TURNS_TO_RAD
+                targetYawSpeed = (gravity * math.sin(roll)) / groundSpeed / _TURNS_TO_RAD -- turns/s(右)
             end
             speedRudderPID.iGain = stabilizeIGainAt40RPS * 40 / propRPS
-            speedRudderPID:process(targetYawSpeedTurnsPerSec, yawSpeedTurnsPerSec)
+            speedRudderPID:process(targetYawSpeed, yawSpeed)
         end
     end
     output.setNumber(1, speedRudderPID.output)

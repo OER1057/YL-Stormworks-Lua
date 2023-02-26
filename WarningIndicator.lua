@@ -31,7 +31,6 @@ end
 ---@endsection
 
 --[====[ IN-GAME CODE ]====]
-
 require("Campbell")
 
 centerX = 32

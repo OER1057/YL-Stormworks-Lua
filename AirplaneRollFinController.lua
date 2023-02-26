@@ -7,6 +7,7 @@
 
 --[====[ IN-GAME CODE ]====]
 require("PID")
+require("Math")
 require("Sensors")
 
 MODE_CHANNEL = 20
@@ -21,19 +22,19 @@ MODE_AUTOPILOT = 4
 MODE_LANDING = 5
 MODE_LOCK = -1
 
-maxRollSpeedTurnsPerSec = property.getNumber("Roll Speed [turns/s]")
-stabilizeIGainAt400Kmph = property.getNumber("Stabilize I Gain at 400 km/h")
-stabilizeLookaheadTicks = property.getNumber("Stabilize Lookahead [ticks]")
-speedAileronPID = SpeedPid.new(0, stabilizeLookaheadTicks, -1, 1)
+maxRollSpeed = property.getNumber("Roll Speed [turns/s]") -- turns/s(右)
+stabilizeIGainAt400Kph = property.getNumber("Stabilize I Gain at 400 km/h")
+stabilizeLookahead = property.getNumber("Stabilize Lookahead [ticks]")
+speedAileronPID = SpeedPID.new(0, stabilizeLookahead, -1, 1)
 
-maxRollRad = property.getNumber("Hold Roll Angle [deg]") * _DEG_TO_RAD
+maxRoll = property.getNumber("Hold Roll Angle [deg]") * _DEG_TO_RAD -- rad(右)
 holdPGain = property.getNumber("Hold P Gain")
-holdLookaheadTicks = property.getNumber("Hold Lookahead [ticks]")
-rollSpeedPID = NormalPid.new(holdPGain, holdLookaheadTicks, -maxRollSpeedTurnsPerSec, maxRollSpeedTurnsPerSec)
+holdLookahead = property.getNumber("Hold Lookahead [ticks]")
+rollSpeedPID = NormalPID.new(holdPGain, holdLookahead, -maxRollSpeed, maxRollSpeed)
 
 autopilotPGain = property.getNumber("Autopilot P Gain")
-autopilotLookaheadTicks = property.getNumber("Autopilot Lookahead [ticks]")
-fpdRollPID = NormalPid.new(autopilotPGain, autopilotLookaheadTicks, -maxRollRad, maxRollRad)
+autopilotLookahead = property.getNumber("Autopilot Lookahead [ticks]")
+fpdRollPID = NormalPID.new(autopilotPGain, autopilotLookahead, -maxRoll, maxRoll)
 
 locFpdPID = {}
 
@@ -42,15 +43,15 @@ gpsEast = Delta.new()
 
 function onTick()
     mode = input.getNumber(MODE_CHANNEL)
-    seatRollInput = input.getNumber(SEAT_CHANNEL)
-    airSpeedMps = math.max(Sensor:getAirSpeedMps(), 30)
+    seatRollInput = input.getNumber(SEAT_CHANNEL) -- +-1(右)
+    airSpeed = math.max(Sensor:getAirSpeedMps(), 30) -- m/s
 
-    rollSpeedTurnsPerSec = Sensor:getRollSpeedRadPerSec() / _TURNS_TO_RAD
-    rollRad = Sensor:getRollRad()
+    rollSpeed = Sensor:getRollSpeedRadPerSec() / _TURNS_TO_RAD -- turns/s(右)
+    roll = Sensor:getRollRad() -- rad(右)
 
     gpsNorth:update(Sensor:getGpsNorth())
     gpsEast:update(Sensor:getGpsEast())
-    fpdDeg = coordinateToHeadingDegree(gpsNorth.delta, gpsEast.delta)
+    fpd = coordinateToHeading(gpsNorth.delta, gpsEast.delta) -- deg(北→東)
 
     if mode == MODE_NOT_SELECTED or mode == MODE_LOCK then
     else
@@ -58,23 +59,22 @@ function onTick()
             speedAileronPID.output = seatRollInput
         else
             if mode == MODE_STABILIZE then
-                targetRollSpeedTurnsPerSec = maxRollSpeedTurnsPerSec * seatRollInput
+                targetRollSpeed = maxRollSpeed * seatRollInput -- turns/s(右)
             else
                 if mode == MODE_HOLD then
-                    targetRollRad = maxRollRad * seatRollInput
+                    targetRoll = maxRoll * seatRollInput -- rad(右)
                 else
                     if mode == MODE_AUTOPILOT then
-                        targetFpdDeg = input.getNumber(AP_TARGET_CHANNEL)
+                        targetFPD = input.getNumber(AP_TARGET_CHANNEL) -- deg(北→東)
                     elseif mode == MODE_LANDING then
-                        targetFpdDeg = 0
-                        -- targetFpdDeg = locFpdPID:process()
+                        targetFPD = 0
                     end
-                    targetRollRad = fpdRollPID:process(0, -deltaToPerTicks(targetFpdDeg - fpdDeg, 0, 360)) -- なぜ負？
+                    targetRoll = fpdRollPID:process(0, move(fpd, targetFPD, 0, 360))
                 end
-                targetRollSpeedTurnsPerSec = rollSpeedPID:process(targetRollRad, rollRad)
+                targetRollSpeed = rollSpeedPID:process(targetRoll, roll)
             end
-            speedAileronPID.iGain = stabilizeIGainAt400Kmph * 400 / (airSpeedMps * _MPS_TO_KPH)
-            speedAileronPID:process(targetRollSpeedTurnsPerSec, rollSpeedTurnsPerSec)
+            speedAileronPID.iGain = stabilizeIGainAt400Kph * 400 / (airSpeed * _MPS_TO_KPH)
+            speedAileronPID:process(targetRollSpeed, rollSpeed)
         end
     end
     output.setNumber(1, speedAileronPID.output)

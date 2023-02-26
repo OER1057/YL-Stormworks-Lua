@@ -23,11 +23,11 @@ function len(x, y)
     return math.sqrt(x ^ 2 + y ^ 2)
 end
 
-function coordinateToHeading(originNorth, originEast, targetNorth, targetEast) -- deg
+function coordinateToHeading(originNorth, originEast, targetNorth, targetEast) -- deg(北→東)
     return (math.atan(targetEast - originEast, targetNorth - originNorth) * _RAD_TO_DEG + 360) % 360
 end
 
-function move(after, before, rangeMin, rangeMax)
+function move(after, before, rangeMin, rangeMax) -- 移動量
     local move = after - before
     local range = rangeMax - rangeMin
     if move < 0 then -- オーバーフローの可能性

@@ -56,14 +56,14 @@ gpsEast = Delta:new()
 function onTick()
     gpsNorth:update(Sensor:getGpsNorth())
     gpsEast:update(Sensor:getGpsEast())
-    rollRad = Sensor:getRollRad()
+    roll = Sensor:getRollRad()
     pitchNormal = Sensor:getPitchRad() / _TURNS_TO_RAD
     headingDeg = Sensor:getHeadingDeg()
     airSpeed = clamp(Sensor:getAirSpeedMps() * _MPS_TO_KPH, 0, 999)
     pressureAltitude = clamp(Sensor:getAltitudeMeter(), 0, 999)
     groundSpeed = len(gpsNorth.delta, gpsEast.delta) / _TICKS_TO_SEC * _MPS_TO_KPH
     radarAltitude = Sensor:getRadarAltitudeMeter()
-    flightPathDeg = coordinateToHeadingDegree(gpsNorth.delta, gpsEast.delta)
+    flightPathDeg = coordinateToHeading(gpsNorth.delta, gpsEast.delta)
 end
 
 function onDraw()
@@ -71,27 +71,27 @@ function onDraw()
     screen.drawClear()
     d0 = pitchNormal * 360 / 45
     yellow()
-    drawSquareF(centerX + pitchScaleSize * ( -d0 * math.sin(rollRad) + 1.5 * math.cos(rollRad)),
-        centerY + pitchScaleSize * ( -d0 * math.cos(rollRad) - 1.5 * math.sin(rollRad)),
-        centerX + pitchScaleSize * ( -d0 * math.sin(rollRad) - 1.5 * math.cos(rollRad)),
-        centerY + pitchScaleSize * ( -d0 * math.cos(rollRad) + 1.5 * math.sin(rollRad)),
-        centerX + pitchScaleSize * ((3 - d0) * math.sin(rollRad) - 1.5 * math.cos(rollRad)),
-        centerY + pitchScaleSize * ((3 - d0) * math.cos(rollRad) + 1.5 * math.sin(rollRad)),
-        centerX + pitchScaleSize * ((3 - d0) * math.sin(rollRad) + 1.5 * math.cos(rollRad)),
-        centerY + pitchScaleSize * ((3 - d0) * math.cos(rollRad) - 1.5 * math.sin(rollRad)))
+    drawSquareF(centerX + pitchScaleSize * ( -d0 * math.sin(roll) + 1.5 * math.cos(roll)),
+        centerY + pitchScaleSize * ( -d0 * math.cos(roll) - 1.5 * math.sin(roll)),
+        centerX + pitchScaleSize * ( -d0 * math.sin(roll) - 1.5 * math.cos(roll)),
+        centerY + pitchScaleSize * ( -d0 * math.cos(roll) + 1.5 * math.sin(roll)),
+        centerX + pitchScaleSize * ((3 - d0) * math.sin(roll) - 1.5 * math.cos(roll)),
+        centerY + pitchScaleSize * ((3 - d0) * math.cos(roll) + 1.5 * math.sin(roll)),
+        centerX + pitchScaleSize * ((3 - d0) * math.sin(roll) + 1.5 * math.cos(roll)),
+        centerY + pitchScaleSize * ((3 - d0) * math.cos(roll) - 1.5 * math.sin(roll)))
 
     bwhite()
     for p = pitchScaleIntervalDegree, 90, pitchScaleIntervalDegree do
         d = (pitchNormal * 360 + p) / 45
-        screen.drawLine(centerX + pitchScaleSize * ( -d * math.sin(rollRad) + 0.5 * math.cos(rollRad)),
-            centerY + pitchScaleSize * ( -d * math.cos(rollRad) - 0.5 * math.sin(rollRad)),
-            centerX + pitchScaleSize * ( -d * math.sin(rollRad) - 0.5 * math.cos(rollRad)),
-            centerY + pitchScaleSize * ( -d * math.cos(rollRad) + 0.5 * math.sin(rollRad)))
+        screen.drawLine(centerX + pitchScaleSize * ( -d * math.sin(roll) + 0.5 * math.cos(roll)),
+            centerY + pitchScaleSize * ( -d * math.cos(roll) - 0.5 * math.sin(roll)),
+            centerX + pitchScaleSize * ( -d * math.sin(roll) - 0.5 * math.cos(roll)),
+            centerY + pitchScaleSize * ( -d * math.cos(roll) + 0.5 * math.sin(roll)))
         d = (pitchNormal * 360 - p) / 45
-        screen.drawLine(centerX + pitchScaleSize * ( -d * math.sin(rollRad) + 0.5 * math.cos(rollRad)),
-            centerY + pitchScaleSize * ( -d * math.cos(rollRad) - 0.5 * math.sin(rollRad)),
-            centerX + pitchScaleSize * ( -d * math.sin(rollRad) - 0.5 * math.cos(rollRad)),
-            centerY + pitchScaleSize * ( -d * math.cos(rollRad) + 0.5 * math.sin(rollRad)))
+        screen.drawLine(centerX + pitchScaleSize * ( -d * math.sin(roll) + 0.5 * math.cos(roll)),
+            centerY + pitchScaleSize * ( -d * math.cos(roll) - 0.5 * math.sin(roll)),
+            centerX + pitchScaleSize * ( -d * math.sin(roll) - 0.5 * math.cos(roll)),
+            centerY + pitchScaleSize * ( -d * math.cos(roll) + 0.5 * math.sin(roll)))
     end
 
     screen.setColor(0, 0, 0, 127)

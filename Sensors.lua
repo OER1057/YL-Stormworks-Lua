@@ -15,23 +15,6 @@ _FRONT_DISTANCE_OFFSET_CHANNEL = 31
 _WIND_SENSOR_SPEED_CHANNEL = 28
 _WIND_SENSOR_DIRECTION_CHANNEL = 27
 
-function coordinateToHeadingDegree(north, east) -- Mathに移動(互換性のため維持)
-    return (math.atan(east, north) * _RAD_TO_DEG) % 360
-end
-
-function deltaToPerTicks(delta, rangeMin, rangeMax) -- Mathに移動(互換性のため維持)
-    if delta < 0 then -- オーバーフローの可能性
-        fixedDelta = delta + (rangeMax - rangeMin) -- (x + delta + range) - x
-    else -- アンダーフローの可能性
-        fixedDelta = delta - (rangeMax - rangeMin) -- (x + delta - range) - x
-    end
-    if math.abs(delta) < math.abs(fixedDelta) then -- 補正後より変化量が小さかったら
-        return delta -- 補正前
-    else
-        return fixedDelta
-    end
-end
-
 Sensor = {
     -- センサ生値
     ---- Physics Sensor
@@ -164,7 +147,7 @@ Sensor = {
         Y = self:getYEulerRotationRad()
         Z = self:getZEulerRotationRad()
         return
-            coordinateToHeadingDegree(
+            coordinateToHeading(
                 math.cos(X) * math.cos(Y), -- zのZ成分
                 math.cos(X) * math.sin(Y) * math.cos(Z) + math.sin(X) * math.sin(Z)) -- zのX成分
     end,

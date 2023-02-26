@@ -8,7 +8,7 @@
 --[====[ IN-GAME CODE ]====]
 require("Math")
 
-NormalPid = {
+NormalPID = {
     new = function(pGain, lookaheadTicks, limitMin, limitMax)
         return {
             lastProcessVariable = 0,
@@ -29,7 +29,7 @@ NormalPid = {
     end
 }
 
-SpeedPid = {
+SpeedPID = {
     new = function(iGain, lookaheadTicks, limitMin, limitMax)
         return {
             lastProcessVariable = 0,
@@ -53,6 +53,6 @@ SpeedPid = {
 
 -- 一般的な定数
 
-maxThrottle = 1
-turbineMinThrottle = 0.01
-turbineStartRPS = 0.5
+_MAX_THROTTLE = 1
+_TURBINE_MIN_THROTTLE = 0.01
+_TURBINE_START_RPS = 0.5
