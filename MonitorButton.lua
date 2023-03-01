@@ -13,10 +13,13 @@ PushButton = {
         return {
             pushedTime = 0,
             isPushedNow = false,
+            isPushed = false,
             update = function(self, isPushing)
                 if isPushing then
+                    self.isPushed = true
                     self.pushedTime = self.pushedTime + 1
                 else
+                    self.isPushed = false
                     self.pushedTime = 0
                 end
                 self.isPushedNow = self.pushedTime == 1
