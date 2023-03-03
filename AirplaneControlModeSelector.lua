@@ -66,10 +66,13 @@ function onTick()
     touchX = input.getNumber(3)
     touchY = input.getNumber(4)
     TouchArea:update(isTouched, touchX, touchY)
+    seatRollInput = input.getNumber(11)
+    seatPitchInput = input.getNumber(12)
+    seatYawInput = input.getNumber(13)
+    -- タッチ入力
     for name, button in pairs(buttons) do
         button:update(TouchArea.whichArea == name)
     end
-
     for index, name in pairs(rollMode.names) do
         buttonName = name .. "Roll"
         if buttons[buttonName].isPushedNow then
@@ -92,8 +95,18 @@ function onTick()
             end
         end
     end
-
-
+    -- 手動操縦オーバーライド
+    if seatRollInput ~= 0 then
+        rollMode.current = math.min(rollMode.current, 3)
+    end
+    if seatPitchInput ~= 0 then
+        pitchMode.current = math.min(pitchMode.current, 3)
+    end
+    if seatYawInput ~= 0 then
+        rollMode.current = math.min(rollMode.current, 3)
+        yawMode.current = math.min(yawMode.current, 2)
+    end
+    -- 出力
     if isTouched then
         output.setNumber(1, -1)
         output.setNumber(2, -1)
