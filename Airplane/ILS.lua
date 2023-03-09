@@ -6,13 +6,13 @@
 --- If you have any issues, please report them here: https://github.com/nameouschangey/STORMWORKS_VSCodeExtension/issues - by Nameous Changey
 
 --[====[ IN-GAME CODE ]====]
-require("HSI")
+require("Airplane.HSI")
 
 ILS = {
-    glideSlopeAngle = 0.05236, -- rad, 設定値
-    runwayHeading = 0, -- deg(北→東), 設定値
-    horizontalGap = 0, -- meter(グライドスロープより右側正)
-    verticalGap = 0, -- meter(グライドスロープより上側正)
+    glideSlopeAngle = 0.05236,             -- rad, 設定値
+    runwayHeading = 0,                     -- deg(北→東), 設定値
+    horizontalGap = 0,                     -- meter(グライドスロープより右側正)
+    verticalGap = 0,                       -- meter(グライドスロープより上側正)
     --
     update = function(self, HSI, altitude) -- HSIobj, meter, HSIの目的地を着陸位置に設定
         self.horizontalGap = HSI.gap
