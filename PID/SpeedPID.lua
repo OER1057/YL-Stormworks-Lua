@@ -6,7 +6,7 @@
 --- If you have any issues, please report them here: https://github.com/nameouschangey/STORMWORKS_VSCodeExtension/issues - by Nameous Changey
 
 --[====[ IN-GAME CODE ]====]
-require("Math")
+require("Math.Clamp")
 
 SpeedPID = {
     new = function(iGain, lookaheadTicks, limitMin, limitMax)

@@ -6,6 +6,7 @@
 --- If you have any issues, please report them here: https://github.com/nameouschangey/STORMWORKS_VSCodeExtension/issues - by Nameous Changey
 
 --[====[ IN-GAME CODE ]====]
+require("Constants.Units")
 require("MonitorButton")
 
 -- input channels
@@ -16,7 +17,7 @@ local CHANNEL_SEAT_INPUT = 2
 local SWITCH_STATE_CHANNEL = 1
 do
     local defauleState = property.getBool("Default State")
-    local timeToOn = math.max(1, property.getNumber("Off -> On Time [s]") * _SEC_TO_TICKS) -- ticks
+    local timeToOn = math.max(1, property.getNumber("Off -> On Time [s]") * _SEC_TO_TICKS)  -- ticks
     local timeToOff = math.max(1, property.getNumber("On -> Off Time [s]") * _SEC_TO_TICKS) -- ticks
     switch = ToggleButton.new(defauleState, timeToOn, timeToOff)
 end

@@ -6,7 +6,9 @@
 --- If you have any issues, please report them here: https://github.com/nameouschangey/STORMWORKS_VSCodeExtension/issues - by Nameous Changey
 
 --[====[ IN-GAME CODE ]====]
-require("Math")
+require("Constants.Units")
+require("Map.CoordinateToHeading")
+require("Math.Len")
 -- チャンネル
 _ALT_OFFSET_CHANNEL = 32
 _BOTTOM_DISTANCE_SENSOR_CHANNEL = 30
@@ -111,10 +113,10 @@ Sensor = {
             sign = 1
         end
         xTilt = math.atan(
-            -math.cos(Y) * math.sin(Z), -- xのY成分
-            sign * len( -- xのXZ平面への射影の絶対値
-                math.cos(Y) * math.cos(Z), -- xのX成分
-                -math.sin(Y))) -- xのZ成分
+            -math.cos(Y) * math.sin(Z),                                      -- xのY成分
+            sign * len(                                                      -- xのXZ平面への射影の絶対値
+                math.cos(Y) * math.cos(Z),                                   -- xのX成分
+                -math.sin(Y)))                                               -- xのZ成分
         if sign > 0 then
             return math.asin(math.sin(xTilt) / math.cos(self:getPitchRad())) -- 呪文
         else
@@ -132,12 +134,12 @@ Sensor = {
             sign = 1
         end
         return math.atan(
-            -math.cos(X) * math.sin(Y) * math.sin(Z) + math.sin(X) * math.cos(Z), -- zのY成分
-            sign * len( -- zのXZ平面への射影
+            -math.cos(X) * math.sin(Y) * math.sin(Z) + math.sin(X) * math.cos(Z),    -- zのY成分
+            sign * len(                                                              -- zのXZ平面への射影
                 math.cos(X) * math.sin(Y) * math.cos(Z) + math.sin(X) * math.sin(Z), -- zのX成分
-                math.cos(X) * math.cos(Y))) -- zのZ成分
+                math.cos(X) * math.cos(Y)))                                          -- zのZ成分
     end,
-    getPitchRad = function(self) -- -pi/2 to pi/2
+    getPitchRad = function(self)                                                     -- -pi/2 to pi/2
         pitchRad = self:getPitchRad2()
         return math.atan(math.sin(pitchRad), math.abs(math.cos(pitchRad)))
     end,
@@ -148,7 +150,7 @@ Sensor = {
         Z = self:getZEulerRotationRad()
         return
             coordinateToHeading(
-                math.cos(X) * math.cos(Y), -- zのZ成分
+                math.cos(X) * math.cos(Y),                                           -- zのZ成分
                 math.cos(X) * math.sin(Y) * math.cos(Z) + math.sin(X) * math.sin(Z)) -- zのX成分
     end,
     -- 暫定措置

@@ -17,6 +17,7 @@ CHANNEL_HORIZONTAL_GAP = 2
 CHANNEL_HORIZONTAL_DIRECTION = 3
 CHANNEL_DISTANCE = 4
 
+require("Constants.Units")
 require("HSI")
 require("ILS")
 require("Sensors")
@@ -32,10 +33,10 @@ function onTick()
     HSI.targetNorth = input.getNumber(TOUCHDOWN_NORTH_CHANNEL)
     HSI.targetEast = input.getNumber(TOUCHDOWN_EAST_CHANNEL)
     HSI.courceHeading = input.getNumber(RUNWAY_HEADING_CHANNEL)
-    gpsNorth = Sensor:getGpsNorth() -- meter
-    gpsEast = Sensor:getGpsEast() -- meter
+    gpsNorth = Sensor:getGpsNorth()      -- meter
+    gpsEast = Sensor:getGpsEast()        -- meter
     altitude = Sensor:getAltitudeMeter() -- meter
-    heading = Sensor:getHeadingDeg() -- deg
+    heading = Sensor:getHeadingDeg()     -- deg
     HSI:update(gpsNorth, gpsEast, heading)
     ILS:update(HSI, altitude)
     --

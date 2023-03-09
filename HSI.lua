@@ -6,16 +6,19 @@
 --- If you have any issues, please report them here: https://github.com/nameouschangey/STORMWORKS_VSCodeExtension/issues - by Nameous Changey
 
 --[====[ IN-GAME CODE ]====]
-require("Math")
+require("Constants.Units")
+require("Map.CoordinateToHeading")
+require("Math.Len")
+require("Math.Move")
 
 HSI = {
-    targetNorth = 0, -- meter, 設定値
-    targetEast = 0, -- meter, 設定値
-    courceHeading = 0, -- deg(北→東), 設定値
-    distance = 0, -- meter(前方: 正)
-    targetHeading = 0, -- deg(北→東)
-    direction = 0, -- deg(正面→右)
-    gap = 0, -- meter(コースの右側正)
+    targetNorth = 0,                                    -- meter, 設定値
+    targetEast = 0,                                     -- meter, 設定値
+    courceHeading = 0,                                  -- deg(北→東), 設定値
+    distance = 0,                                       -- meter(前方: 正)
+    targetHeading = 0,                                  -- deg(北→東)
+    direction = 0,                                      -- deg(正面→右)
+    gap = 0,                                            -- meter(コースの右側正)
     --
     update = function(self, gpsNorth, gpsEast, heading) -- meter, meter, deg(北→東)
         self.distance = len(gpsNorth - self.targetNorth, gpsEast - self.targetEast)

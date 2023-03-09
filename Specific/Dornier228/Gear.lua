@@ -25,7 +25,7 @@ end
 
 
 --[====[ IN-GAME CODE ]====]
-require("Math")
+require("Constants.Units")
 
 -- input channels
 CHANNEL_GEAR_LEVER = 1
@@ -42,18 +42,18 @@ COVER_ROTATION_CHANNEL = 5
 mainToCoverThreshold = 0.5
 coverToMainThreshold = 0.5
 
-noseSpeed = 1 / (3 * _SEC_TO_TICKS) -- /ticks
+noseSpeed = 1 / (3 * _SEC_TO_TICKS)    -- /ticks
 mainMinSpeed = 1 / (3 * _SEC_TO_TICKS) -- /ticks
 mainMaxSpeed = 1 / (6 * _SEC_TO_TICKS) -- /ticks
-mainSpeed = function() -- /ticks
+mainSpeed = function()                 -- /ticks
     return mainMinSpeed + math.random() * (mainMaxSpeed - mainMinSpeed)
 end
 coverSpeed = 1 / (3 * _SEC_TO_TICKS) -- /ticks
 
-noseRotation = 0 -- 0-1(下→上)
-mainLRotation = 0 -- 0-1(下→上)
-mainRRotation = 0 -- 0-1(下→上)
-coverRotation = 0 -- 0-1(下→上)
+noseRotation = 0                     -- 0-1(下→上)
+mainLRotation = 0                    -- 0-1(下→上)
+mainRRotation = 0                    -- 0-1(下→上)
+coverRotation = 0                    -- 0-1(下→上)
 
 
 function onTick()

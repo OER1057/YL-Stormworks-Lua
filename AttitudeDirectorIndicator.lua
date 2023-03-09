@@ -28,7 +28,11 @@ end
 
 --[====[ IN-GAME CODE ]====]
 require("Campbell")
-require("Math")
+require("Constants.Units")
+require("Map.CoordinateToHeading")
+require("Math.Clamp")
+require("Math.Len")
+require("Math.Round")
 require("Sensors")
 
 centerX = 32
@@ -71,10 +75,10 @@ function onDraw()
     screen.drawClear()
     d0 = pitchNormal * 360 / 45
     yellow()
-    drawSquareF(centerX + pitchScaleSize * ( -d0 * math.sin(roll) + 1.5 * math.cos(roll)),
-        centerY + pitchScaleSize * ( -d0 * math.cos(roll) - 1.5 * math.sin(roll)),
-        centerX + pitchScaleSize * ( -d0 * math.sin(roll) - 1.5 * math.cos(roll)),
-        centerY + pitchScaleSize * ( -d0 * math.cos(roll) + 1.5 * math.sin(roll)),
+    drawSquareF(centerX + pitchScaleSize * (-d0 * math.sin(roll) + 1.5 * math.cos(roll)),
+        centerY + pitchScaleSize * (-d0 * math.cos(roll) - 1.5 * math.sin(roll)),
+        centerX + pitchScaleSize * (-d0 * math.sin(roll) - 1.5 * math.cos(roll)),
+        centerY + pitchScaleSize * (-d0 * math.cos(roll) + 1.5 * math.sin(roll)),
         centerX + pitchScaleSize * ((3 - d0) * math.sin(roll) - 1.5 * math.cos(roll)),
         centerY + pitchScaleSize * ((3 - d0) * math.cos(roll) + 1.5 * math.sin(roll)),
         centerX + pitchScaleSize * ((3 - d0) * math.sin(roll) + 1.5 * math.cos(roll)),
@@ -83,15 +87,15 @@ function onDraw()
     bwhite()
     for p = pitchScaleIntervalDegree, 90, pitchScaleIntervalDegree do
         d = (pitchNormal * 360 + p) / 45
-        screen.drawLine(centerX + pitchScaleSize * ( -d * math.sin(roll) + 0.5 * math.cos(roll)),
-            centerY + pitchScaleSize * ( -d * math.cos(roll) - 0.5 * math.sin(roll)),
-            centerX + pitchScaleSize * ( -d * math.sin(roll) - 0.5 * math.cos(roll)),
-            centerY + pitchScaleSize * ( -d * math.cos(roll) + 0.5 * math.sin(roll)))
+        screen.drawLine(centerX + pitchScaleSize * (-d * math.sin(roll) + 0.5 * math.cos(roll)),
+            centerY + pitchScaleSize * (-d * math.cos(roll) - 0.5 * math.sin(roll)),
+            centerX + pitchScaleSize * (-d * math.sin(roll) - 0.5 * math.cos(roll)),
+            centerY + pitchScaleSize * (-d * math.cos(roll) + 0.5 * math.sin(roll)))
         d = (pitchNormal * 360 - p) / 45
-        screen.drawLine(centerX + pitchScaleSize * ( -d * math.sin(roll) + 0.5 * math.cos(roll)),
-            centerY + pitchScaleSize * ( -d * math.cos(roll) - 0.5 * math.sin(roll)),
-            centerX + pitchScaleSize * ( -d * math.sin(roll) - 0.5 * math.cos(roll)),
-            centerY + pitchScaleSize * ( -d * math.cos(roll) + 0.5 * math.sin(roll)))
+        screen.drawLine(centerX + pitchScaleSize * (-d * math.sin(roll) + 0.5 * math.cos(roll)),
+            centerY + pitchScaleSize * (-d * math.cos(roll) - 0.5 * math.sin(roll)),
+            centerX + pitchScaleSize * (-d * math.sin(roll) - 0.5 * math.cos(roll)),
+            centerY + pitchScaleSize * (-d * math.cos(roll) + 0.5 * math.sin(roll)))
     end
 
     screen.setColor(0, 0, 0, 127)

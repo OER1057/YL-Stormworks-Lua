@@ -33,17 +33,17 @@ CHANNEL_HORIZONTAL_GAP = 2
 CHANNEL_HORIZONTAL_DIRECTION = 3
 CHANNEL_DISTANCE = 4
 
-gapLookahead = 30 -- ticks
+gapLookahead = 30    -- ticks
 gapLookaheadSize = 4 -- px
 
-require("Math")
+require("Math.Clamp")
 require("Campbell")
 
 blinker = {
     interval = 40, -- ticks, 設定値
-    ratio = 0.6, -- 0-1(1: on), 設定値
-    isOn = true, -- bool
-    count = 0, -- [0,interval)
+    ratio = 0.6,   -- 0-1(1: on), 設定値
+    isOn = true,   -- bool
+    count = 0,     -- [0,interval)
     update = function(self)
         self.count = (self.count + 1) % self.interval
         self.isOn = self.count < self.interval * self.ratio
@@ -52,25 +52,25 @@ blinker = {
 }
 
 function onTick()
-    ilsVerticalGap = input.getNumber(CHANNEL_VERTICAL_GAP) -- meter(グライドスロープ上側正)
-    ilsHorizontalGap = input.getNumber(CHANNEL_HORIZONTAL_GAP) -- meter(グライドスロープ右側正)
+    ilsVerticalGap = input.getNumber(CHANNEL_VERTICAL_GAP)       -- meter(グライドスロープ上側正)
+    ilsHorizontalGap = input.getNumber(CHANNEL_HORIZONTAL_GAP)   -- meter(グライドスロープ右側正)
     hsiDirection = input.getNumber(CHANNEL_HORIZONTAL_DIRECTION) -- deg(正面→右)
-    hsiDistance = input.getNumber(CHANNEL_DISTANCE) -- meter
+    hsiDistance = input.getNumber(CHANNEL_DISTANCE)              -- meter
 end
 
 function onDraw()
     if initialized == nil then
         initialized = true
         --
-        screenWidth = screen.getWidth() -- px
-        screenHeight = screen.getHeight() -- px
-        centerX = screenWidth / 2 -- px
-        centerY = screenHeight / 2 -- px
+        screenWidth = screen.getWidth()                                                                           -- px
+        screenHeight = screen.getHeight()                                                                         -- px
+        centerX = screenWidth / 2                                                                                 -- px
+        centerY = screenHeight / 2                                                                                -- px
         viewRadius = math.min(screenWidth, screenHeight) * property.getNumber("ILS Indicator Size [%]") / 100 / 2 -- px
         --
-        ilsLimit = property.getNumber("ILS Max Gap [m]") -- meter
+        ilsLimit = property.getNumber("ILS Max Gap [m]")                                                          -- meter
         --
-        hsiLimit = property.getNumber("Horizontal FOV [deg]") * (2 * viewRadius) / screenWidth -- deg
+        hsiLimit = property.getNumber("Horizontal FOV [deg]") * (2 * viewRadius) / screenWidth                    -- deg
         hsiPositionY = screenHeight - (1 + _FONT_HEIGHT + 1 + 1)
     end
     --

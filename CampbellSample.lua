@@ -15,7 +15,6 @@ end
 ---@endsection
 
 --[====[ IN-GAME CODE ]====]
-
 require("Campbell")
 
 function dot(x, y)

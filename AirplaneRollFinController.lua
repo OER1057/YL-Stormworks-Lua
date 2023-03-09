@@ -6,7 +6,10 @@
 --- If you have any issues, please report them here: https://github.com/nameouschangey/STORMWORKS_VSCodeExtension/issues - by Nameous Changey
 
 --[====[ IN-GAME CODE ]====]
-require("Math")
+require("Constants.Units")
+require("Map.CoordinateToHeading")
+require("Math.Delta")
+require("Math.Move")
 require("PID.SpeedPID")
 require("PID.NormalPID")
 require("Sensors")
