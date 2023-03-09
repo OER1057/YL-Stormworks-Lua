@@ -39,9 +39,7 @@ end
 ---@endsection
 
 --[====[ IN-GAME CODE ]====]
-
-require("Campbell")
-
+require("Monitor.Campbell")
 activeTabWidth = property.getNumber("Active Tab Letter Count") * 5
 otherTabsWidth = property.getNumber("Other Tabs Letter Count") * 5
 

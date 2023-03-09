@@ -7,7 +7,7 @@
 
 --[====[ IN-GAME CODE ]====]
 require("Constants.Units")
-require("MonitorButton")
+require("General.ToggleButton")
 
 -- input channels
 local CHANNEL_PANEL_INPUT = 1

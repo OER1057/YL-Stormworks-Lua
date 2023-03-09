@@ -31,8 +31,7 @@ end
 ---@endsection
 
 --[====[ IN-GAME CODE ]====]
-require("Campbell")
-
+require("Monitor.Campbell")
 centerX = 32
 centerY = 32
 

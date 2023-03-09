@@ -27,7 +27,7 @@ end
 ---@endsection
 
 --[====[ IN-GAME CODE ]====]
-require("Campbell")
+require("Monitor.Campbell")
 require("Constants.Units")
 require("Map.CoordinateToHeading")
 require("Math.Clamp")

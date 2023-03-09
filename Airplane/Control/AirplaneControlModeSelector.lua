@@ -32,8 +32,9 @@ end
 
 
 --[====[ IN-GAME CODE ]====]
-require("Campbell")
-require("MonitorButton")
+require("General.PushButton")
+require("Monitor.Campbell")
+require("Monitor.TouchArea")
 
 rollMode = {
     current = property.getNumber("Default Roll Mode"),

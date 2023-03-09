@@ -29,9 +29,9 @@ end
 
 
 --[====[ IN-GAME CODE ]====]
-require("Campbell")
-
-require("MonitorButton")
+require("Monitor.Campbell")
+require("Monitor.TouchArea")
+require("General.ToggleButton")
 
 buttons = {}
 

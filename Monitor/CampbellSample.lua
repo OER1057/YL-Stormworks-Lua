@@ -15,7 +15,7 @@ end
 ---@endsection
 
 --[====[ IN-GAME CODE ]====]
-require("Campbell")
+require("Monitor.Campbell")
 
 function dot(x, y)
     screen.drawRectF(x, y, 4, 4)

@@ -37,8 +37,7 @@ gapLookahead = 30    -- ticks
 gapLookaheadSize = 4 -- px
 
 require("Math.Clamp")
-require("Campbell")
-
+require("Monitor.Campbell")
 blinker = {
     interval = 40, -- ticks, 設定値
     ratio = 0.6,   -- 0-1(1: on), 設定値

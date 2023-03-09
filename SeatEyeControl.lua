@@ -5,7 +5,7 @@
 --- Developed using LifeBoatAPI - Stormworks Lua plugin for VSCode - https://code.visualstudio.com/download (search "Stormworks Lua with LifeboatAPI" extension)
 --- If you have any issues, please report them here: https://github.com/nameouschangey/STORMWORKS_VSCodeExtension/issues - by Nameous Changey
 --[====[ IN-GAME CODE ]====]
-require("MonitorButton")
+require("General.PushButton")
 
 eyeControlChannel = property.getNumber("Hotkey")
 eyeControlAxisX = property.getNumber("Axis X")
@@ -27,10 +27,10 @@ function onTick()
     passThrough()
     eyeControlSwitch:update(input.getBool(eyeControlChannel))
     if eyeControlSwitch.isPushed then
-        lookX = input.getNumber(9) -- turns(右)
+        lookX = input.getNumber(9)  -- turns(右)
         lookY = input.getNumber(10) -- turns(上)
         if eyeControlInvertY then
-            lookY = -lookY -- turns(下)
+            lookY = -lookY          -- turns(下)
         end
         if eyeControlSwitch.isPushedNow then
             lookXBase = lookX

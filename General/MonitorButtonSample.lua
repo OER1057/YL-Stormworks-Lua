@@ -30,7 +30,9 @@ end
 ---@endsection
 
 --[====[ IN-GAME CODE ]====]
-require("MonitorButton")
+require("General.PushButton")
+require("General.ToggleButton")
+require("Monitor.TouchArea")
 
 TouchArea:addArea("1", 0, 0, 16, 16)
 TouchArea:addArea("2", 16, 0, 16, 16)

@@ -74,8 +74,7 @@ function onTick()
     localZ = turnAroundZ(localZ, Z)
 end
 
-require("Campbell")
-
+require("Monitor.Campbell")
 function onDraw()
     screenWidth = screen.getWidth()
     screenHeight = screen.getHeight()
