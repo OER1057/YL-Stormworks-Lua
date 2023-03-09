@@ -6,7 +6,8 @@
 --- If you have any issues, please report them here: https://github.com/nameouschangey/STORMWORKS_VSCodeExtension/issues - by Nameous Changey
 
 --[====[ IN-GAME CODE ]====]
-require("PID")
+require("PID.SpeedPID")
+require("Constants.Engine")
 
 -- 3-3-1 固有設定値
 iGain = 0.005

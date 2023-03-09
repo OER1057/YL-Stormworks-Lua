@@ -7,7 +7,8 @@
 
 --[====[ IN-GAME CODE ]====]
 require("Math")
-require("PID")
+require("PID.SpeedPID")
+require("PID.NormalPID")
 require("Sensors")
 
 MODE_CHANNEL = 20
@@ -36,7 +37,7 @@ function onTick()
 
     yawSpeed = Sensor:getYawSpeedRadPerSec() / _TURNS_TO_RAD -- turns/s(右)
 
-    roll = Sensor:getRollRad() -- rad(右)
+    roll = Sensor:getRollRad()                               -- rad(右)
     gpsNorth:update(Sensor:getGpsNorth())
     gpsEast:update(Sensor:getGpsEast())
     groundSpeed = len(gpsNorth.delta, gpsEast.delta) / _TICKS_TO_SEC -- m/s
@@ -47,7 +48,7 @@ function onTick()
             speedRudderPID.output = seatYawInput
         else
             if mode == MODE_STABILIZE then
-                targetYawSpeed = maxYawSpeed * seatYawInput -- turns/s(右)
+                targetYawSpeed = maxYawSpeed * seatYawInput                               -- turns/s(右)
             elseif mode == MODE_TURN_COORDINATE then
                 targetYawSpeed = (gravity * math.sin(roll)) / groundSpeed / _TURNS_TO_RAD -- turns/s(右)
             end

@@ -6,8 +6,9 @@
 --- If you have any issues, please report them here: https://github.com/nameouschangey/STORMWORKS_VSCodeExtension/issues - by Nameous Changey
 
 --[====[ IN-GAME CODE ]====]
-require("PID")
 require("Math")
+require("PID.SpeedPID")
+require("PID.NormalPID")
 require("Sensors")
 
 MODE_CHANNEL = 20
@@ -43,11 +44,11 @@ gpsEast = Delta.new()
 
 function onTick()
     mode = input.getNumber(MODE_CHANNEL)
-    seatRollInput = input.getNumber(SEAT_CHANNEL) -- +-1(右)
-    airSpeed = math.max(Sensor:getAirSpeedMps(), 30) -- m/s
+    seatRollInput = input.getNumber(SEAT_CHANNEL)              -- +-1(右)
+    airSpeed = math.max(Sensor:getAirSpeedMps(), 30)           -- m/s
 
     rollSpeed = Sensor:getRollSpeedRadPerSec() / _TURNS_TO_RAD -- turns/s(右)
-    roll = Sensor:getRollRad() -- rad(右)
+    roll = Sensor:getRollRad()                                 -- rad(右)
 
     gpsNorth:update(Sensor:getGpsNorth())
     gpsEast:update(Sensor:getGpsEast())

@@ -8,27 +8,6 @@
 --[====[ IN-GAME CODE ]====]
 require("Math")
 
-NormalPID = {
-    new = function(pGain, lookaheadTicks, limitMin, limitMax)
-        return {
-            lastProcessVariable = 0,
-            pGain = pGain,
-            lookaheadTicks = lookaheadTicks,
-            output = 0,
-            limitMin = limitMin,
-            limitMax = limitMax,
-            process = function(self, setPoint, processVariable)
-                local processVariableDelta = processVariable - self.lastProcessVariable
-                self.lastProcessVariable = processVariable
-                self.output = clamp(
-                    (setPoint - (processVariable + processVariableDelta * self.lookaheadTicks)) * self.pGain
-                    , self.limitMin, self.limitMax)
-                return self.output
-            end
-        }
-    end
-}
-
 SpeedPID = {
     new = function(iGain, lookaheadTicks, limitMin, limitMax)
         return {
@@ -42,17 +21,10 @@ SpeedPID = {
                 local processVariableDelta = processVariable - self.lastProcessVariable
                 self.lastProcessVariable = processVariable
                 self.output = clamp(self.output +
-                (setPoint - (processVariable + processVariableDelta * self.lookaheadTicks)) * self.iGain
-                    , self.limitMin
-                    , self.limitMax)
+                    (setPoint - (processVariable + processVariableDelta * self.lookaheadTicks)) * self.iGain,
+                    self.limitMin, self.limitMax)
                 return self.output
             end
         }
     end
 }
-
--- 一般的な定数
-
-_MAX_THROTTLE = 1
-_TURBINE_MIN_THROTTLE = 0.01
-_TURBINE_START_RPS = 0.5
