@@ -9,11 +9,20 @@
 require("Math.Between")
 
 PushButton = {
+    ---PushButtonの新しいインスタンスを返します
+    ---@return PushButton
     new = function()
+        ---@class PushButton
+        ---@field pushedTime integer 押されていた時間/ticks
+        ---@field isPushedNow boolean 押された瞬間か否か
+        ---@field isPushed boolean 押されているか否か
         return {
             pushedTime = 0,
             isPushedNow = false,
             isPushed = false,
+            ---状態を更新します
+            ---@param self PushButton
+            ---@param isPushing boolean 押しているか否か
             update = function(self, isPushing)
                 if isPushing then
                     self.isPushed = true

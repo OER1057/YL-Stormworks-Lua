@@ -9,7 +9,20 @@
 require("Math.Clamp")
 
 SpeedPID = {
+    ---SpeedPIDの新しいインスタンスを返します
+    ---@param iGain number Iゲイン
+    ---@param lookaheadTicks number 先読み量/ticks
+    ---@param limitMin number 最小値
+    ---@param limitMax number 最大値
+    ---@return SpeedPID
     new = function(iGain, lookaheadTicks, limitMin, limitMax)
+        ---@class SpeedPID
+        ---@field lastProcessBariable number 現在値
+        ---@field iGain number Iゲイン
+        ---@field lookaheadTicks number 先読み量/ticks
+        ---@field output number 操作量
+        ---@field limitMin number 最小値
+        ---@field limitMax number 最大値
         return {
             lastProcessVariable = 0,
             iGain = iGain,
@@ -17,6 +30,11 @@ SpeedPID = {
             output = 0,
             limitMin = limitMin,
             limitMax = limitMax,
+            ---操作を実行し、操作量を返します
+            ---@param self SpeedPID
+            ---@param setPoint number 目標値
+            ---@param processVariable number 現在値
+            ---@return number 操作量
             process = function(self, setPoint, processVariable)
                 local processVariableDelta = processVariable - self.lastProcessVariable
                 self.lastProcessVariable = processVariable

@@ -11,16 +11,28 @@ require("Map.CoordinateToHeading")
 require("Math.Len")
 require("Math.Move")
 
+---@class HSI
+---@field targetNorth number 目的地のY座標/m
+---@field targetEast number 目的地のX座標/m
+---@field courceHeading number 経路の方位/hdg
+---@field distance number 目的地への距離/m(前方)
+---@field targetHeading number 目的地の方位/hdg
+---@field direction number 目的地の機首方位に対する向き/deg(正面→右)
+---@field gap number 経路に対する距離(右)
 HSI = {
-    targetNorth = 0,                                    -- meter, 設定値
-    targetEast = 0,                                     -- meter, 設定値
-    courceHeading = 0,                                  -- deg(北→東), 設定値
-    distance = 0,                                       -- meter(前方: 正)
-    targetHeading = 0,                                  -- deg(北→東)
-    direction = 0,                                      -- deg(正面→右)
-    gap = 0,                                            -- meter(コースの右側正)
-    --
-    update = function(self, gpsNorth, gpsEast, heading) -- meter, meter, deg(北→東)
+    targetNorth = 0,
+    targetEast = 0,
+    courceHeading = 0,
+    distance = 0,
+    targetHeading = 0,
+    direction = 0,
+    gap = 0,
+    ---HSIを更新します
+    ---@param self HSI
+    ---@param gpsNorth number 現在地のY座標/m
+    ---@param gpsEast number 現在値のX座標/m
+    ---@param heading number 機首方位/hdg
+    update = function(self, gpsNorth, gpsEast, heading)
         self.distance = len(gpsNorth - self.targetNorth, gpsEast - self.targetEast)
         if math.abs(move(self.targetHeading, self.courceHeading, -180, 180)) > 90 then
             self.distance = -self.distance

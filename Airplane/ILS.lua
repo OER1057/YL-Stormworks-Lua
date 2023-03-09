@@ -8,13 +8,21 @@
 --[====[ IN-GAME CODE ]====]
 require("Airplane.HSI")
 
+---@class ILS
+---@field glideSlopeAngle number グライドスロープの角度/rad
+---@field runwayHeading number 滑走路方位/hdg
+---@field horizontalGap number グライドスロープとの水平方向の差異/m(右側)
+---@field verticalGap number グライドスロープとの鉛直方向の差異/m(上側)
 ILS = {
-    glideSlopeAngle = 0.05236,             -- rad, 設定値
-    runwayHeading = 0,                     -- deg(北→東), 設定値
-    horizontalGap = 0,                     -- meter(グライドスロープより右側正)
-    verticalGap = 0,                       -- meter(グライドスロープより上側正)
-    --
-    update = function(self, HSI, altitude) -- HSIobj, meter, HSIの目的地を着陸位置に設定
+    glideSlopeAngle = 0.05236,
+    runwayHeading = 0,
+    horizontalGap = 0,
+    verticalGap = 0,
+    ---ILSを更新します
+    ---@param self ILS
+    ---@param HSI HSI 目的地を着陸位置に設定
+    ---@param altitude number 現在高度
+    update = function(self, HSI, altitude)
         self.horizontalGap = HSI.gap
         self.verticalGap = altitude - HSI.distance * math.tan(self.glideSlopeAngle)
     end,

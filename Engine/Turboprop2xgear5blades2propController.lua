@@ -11,7 +11,7 @@ require("Constants.Engine")
 
 -- 2-5-2 固有設定値
 iGain = 0.1
-throttlePID = SpeedPID.new(iGain, nil, _TURBINE_MIN_THROTTLE, _MAX_THROTTLE)
+throttlePID = SpeedPID.new(iGain, 0, _TURBINE_MIN_THROTTLE, _MAX_THROTTLE)
 function lookaheadTicks(turbineRPS)
     return 2.8 / (turbineRPS - 30.3) + math.min(turbineRPS - 28, 0) ^ 2 / 35 + 11
 end

@@ -12,7 +12,7 @@ require("Constants.Engine")
 -- ターボファン固有設定値
 --iGain = 0.01
 iGain = 0.005
-throttlePID = SpeedPID.new(iGain, nil, _TURBINE_MIN_THROTTLE, _MAX_THROTTLE)
+throttlePID = SpeedPID.new(iGain, 0, _TURBINE_MIN_THROTTLE, _MAX_THROTTLE)
 function lookaheadTicks(turbineRPS)
     -- return 224.073015965457 * turbineRPS ^ -0.52829968606074
     return 1 / (turbineRPS + 10) * 2000 + 12
