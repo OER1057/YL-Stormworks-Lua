@@ -7,7 +7,7 @@
 
 --[====[ IN-GAME CODE ]====]
 require("Math.Clamp")
-require("SeatInputSmoother")
+require("General.SeatInputSmoother")
 
 maxThrottle = property.getNumber("Max Throttle")
 minThrottle = property.getNumber("Min Throttle")

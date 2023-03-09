@@ -18,8 +18,8 @@ CHANNEL_HORIZONTAL_DIRECTION = 3
 CHANNEL_DISTANCE = 4
 
 require("Constants.Units")
-require("HSI")
-require("ILS")
+require("Airplane.HSI")
+require("Airplane.ILS")
 require("Sensors")
 
 ILS.glideSlopeAngle = property.getNumber("Glide Slope Angle [deg]") * _DEG_TO_RAD
