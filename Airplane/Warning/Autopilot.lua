@@ -29,15 +29,17 @@ pitchMode = Buffer.new(_WARN_LENGTH, MODE_NOT_SELECTED)
 yawMode = Buffer.new(_WARN_LENGTH, MODE_NOT_SELECTED)
 
 function onTick()
-    rollMode:set(input.getNumber(CHANNEL_ROLL_MODE))
-    pitchMode:set(input.getNumber(CHANNEL_PITCH_MODE))
-    yawMode:set(input.getNumber(CHANNEL_YAW_MODE))
-    if (rollMode:get() <= MODE_HOLD and rollMode:get(-1) >= MODE_AUTOPILOT)
-        or (pitchMode:get() <= MODE_HOLD and pitchMode:get(-1) >= MODE_AUTOPILOT)
-        or (yawMode:get() <= MODE_STABILIZE and yawMode:get(-1) >= MODE_TURN_COORDINATE) then
-        warning = true;
-    else
-        warning = false;
+    if input.getNumber(1) ~= MODE_LOCK then
+        rollMode:set(input.getNumber(CHANNEL_ROLL_MODE))
+        pitchMode:set(input.getNumber(CHANNEL_PITCH_MODE))
+        yawMode:set(input.getNumber(CHANNEL_YAW_MODE))
+        if (rollMode:get() <= MODE_HOLD and rollMode:get(-1) >= MODE_AUTOPILOT)
+            or (pitchMode:get() <= MODE_HOLD and pitchMode:get(-1) >= MODE_AUTOPILOT)
+            or (yawMode:get() <= MODE_STABILIZE and yawMode:get(-1) >= MODE_TURN_COORDINATE) then
+            warning = true;
+        else
+            warning = false;
+        end
     end
-    output.setBool(1, warning)
+    output.setBool(1, warning or false)
 end
