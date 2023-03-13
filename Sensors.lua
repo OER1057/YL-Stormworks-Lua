@@ -149,7 +149,7 @@ Sensor = {
         Y = self:getYEulerRotationRad()
         Z = self:getZEulerRotationRad()
         return
-            coordinateToHeading(
+            coordinateToHeading(0, 0,
                 math.cos(X) * math.cos(Y),                                           -- zのZ成分
                 math.cos(X) * math.sin(Y) * math.cos(Z) + math.sin(X) * math.sin(Z)) -- zのX成分
     end,

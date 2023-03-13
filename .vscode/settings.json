@@ -47,5 +47,6 @@
             "name": "LifeBoatAPI",
             "gitUrl": "https://github.com/nameouschangey/Stormworks_LifeBoatAPI_MC.git"
         }
-    ]
+    ],
+    "explorer.excludeGitIgnore": true
 }

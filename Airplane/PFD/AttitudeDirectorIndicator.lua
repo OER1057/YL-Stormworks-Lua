@@ -31,6 +31,7 @@ require("Monitor.Campbell")
 require("Constants.Units")
 require("Map.CoordinateToHeading")
 require("Math.Clamp")
+require("Math.Delta")
 require("Math.Len")
 require("Math.Round")
 require("Sensors")
@@ -46,12 +47,12 @@ function drawSquareF(x1, y1, x2, y2, x3, y3, x4, y4)
 end
 
 function drm(x, y, v)
-    screen.drawText(x, y - 6 + 6 * (math.max(v % 100, 99) - 99), math.floor((v + 100) / 100 % 10))
-    screen.drawText(x, y + 6 * (math.max(v % 100, 99) - 99), math.floor(v / 100 % 10))
-    screen.drawText(x + 5, y - 6 + 6 * (math.max(v % 10, 9) - 9), math.floor((v + 10) / 10 % 10))
-    screen.drawText(x + 5, y + 6 * (math.max(v % 10, 9) - 9), math.floor(v / 10 % 10))
-    screen.drawText(x + 10, y - 6 + 6 * (v % 1), math.floor((v + 1) % 10))
-    screen.drawText(x + 10, y + 6 * (v % 1), math.floor(v % 10))
+    screen.drawText(x, y - 6 + 6 * (math.max(v % 100, 99) - 99), tostring(math.floor((v + 100) / 100 % 10)))
+    screen.drawText(x, y + 6 * (math.max(v % 100, 99) - 99), tostring(math.floor(v / 100 % 10)))
+    screen.drawText(x + 5, y - 6 + 6 * (math.max(v % 10, 9) - 9), tostring(math.floor((v + 10) / 10 % 10)))
+    screen.drawText(x + 5, y + 6 * (math.max(v % 10, 9) - 9), tostring(math.floor(v / 10 % 10)))
+    screen.drawText(x + 10, y - 6 + 6 * (v % 1), tostring(math.floor((v + 1) % 10)))
+    screen.drawText(x + 10, y + 6 * (v % 1), tostring(math.floor(v % 10)))
 end
 
 gpsNorth = Delta:new()
@@ -67,7 +68,7 @@ function onTick()
     pressureAltitude = clamp(Sensor:getAltitudeMeter(), 0, 999)
     groundSpeed = len(gpsNorth.delta, gpsEast.delta) / _TICKS_TO_SEC * _MPS_TO_KPH
     radarAltitude = Sensor:getRadarAltitudeMeter()
-    flightPathDeg = coordinateToHeading(gpsNorth.delta, gpsEast.delta)
+    flightPathDeg = coordinateToHeading(0, 0, gpsNorth.delta, gpsEast.delta)
 end
 
 function onDraw()

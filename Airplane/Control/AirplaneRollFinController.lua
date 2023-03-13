@@ -55,7 +55,7 @@ function onTick()
 
     gpsNorth:update(Sensor:getGpsNorth())
     gpsEast:update(Sensor:getGpsEast())
-    fpd = coordinateToHeading(gpsNorth.delta, gpsEast.delta) -- deg(北→東)
+    fpd = coordinateToHeading(0, 0, gpsNorth.delta, gpsEast.delta) -- deg(北→東)
 
     if mode == MODE_NOT_SELECTED or mode == MODE_LOCK then
     else
