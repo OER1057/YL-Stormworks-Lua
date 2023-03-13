@@ -20,3 +20,17 @@ Delta = {
         }
     end
 }
+
+---直近の1回微分を返します
+---@param buffer Buffer 循環バッファのインスタンス
+---@return number 1回微分
+function Delta(buffer)
+    return buffer:get() - buffer:get(1)
+end
+
+---直近の2回微分を返します
+---@param buffer Buffer 循環バッファのインスタンス
+---@return number 2回微分
+function DDelta(buffer)
+    return Delta(buffer) - (buffer:get(1) - buffer:get(2))
+end
